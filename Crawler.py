@@ -6,7 +6,10 @@
 
 import requests
 
-def Crawler(object):
+class Crawler(object):
+    """
+    Initialize a new crawler.
+    """
     def __init__(self, config):
         self._config = config
 

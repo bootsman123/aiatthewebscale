@@ -1,6 +1,6 @@
 import configparser
 import random
-import crawler
+import crawler as cw
 import pymongo
 
 # Team name: Banditos
@@ -19,9 +19,13 @@ productIds = range(config.getint('productid', 'min'), config.getint('productid',
 price = range(config.getint('price', 'min'), config.getint('price', 'max') + 1, config.getint('price', 'step')) # Currently only integers, while they should be floats up to 2 decimals.
 
 # Crawl pages for a given runId and interaction.
-runId = random.randint(1, 1e4)
+runId = 1 #random.randint(1, 1e4)
 
-crawler = crawler.Crawler(config)
+crawler = cw.Crawler(config)
+client = pymongo.MongoClient(config.get('database', 'host'), config.getint('database', 'port'))
+db = client.aiatthewebscale
 
 for i in range(1, 5): #range(1, 100000 + 1):
-    pass
+    user = cw.get(runId, i)
+    t = db.users.insert_one(user)
+    print(t)

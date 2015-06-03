@@ -16,6 +16,7 @@ price = range(config.getint('price', 'min'), config.getint('price', 'max') + 1, 
 # Crawl pages for a given runId and interaction.
 runId = 1 #random.randint(1, 1e4)
 
+# Connect to database.
 client = pymongo.MongoClient(config.get('database', 'host'), config.getint('database', 'port'))
 db = client['aiatthewebscale']
 

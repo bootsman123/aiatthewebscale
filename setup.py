@@ -7,6 +7,7 @@ setup(
     packages=[''],
     install_requires=[
         'requests',
+        'pymongo'
     ],
     zip_safe=False
 )

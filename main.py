@@ -1,5 +1,11 @@
 import configparser
-import requests
+import random
+import crawler
+import pymongo
+
+# Team name: Banditos
+# - Training on 1 runid, and test on another runid.
+# - Store data in database.
 
 # Load configuration.
 config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
@@ -12,23 +18,10 @@ colors = [config.get('color', color) for color in config.options('color')]
 productIds = range(config.getint('productid', 'min'), config.getint('productid', 'max') + 1, config.getint('productid', 'step'))
 price = range(config.getint('price', 'min'), config.getint('price', 'max') + 1, config.getint('price', 'step')) # Currently only integers, while they should be floats up to 2 decimals.
 
-# Context request.
-context_params = {'i': 1,
-                  'runid': 1,
-                  'teamid': config.get('team', 'id'),
-                  'teampw': config.get('team', 'pass')}
-#request = requests.get(config.get('website', 'context_url'), params=context_params)
-#json = request.json()
+# Crawl pages for a given runId and interaction.
+runId = random.randint(1, 1e4)
 
-# Propose request.
-propose_params = {'i': 1,
-                  'runid': 1,
-                  'teamid': config.get('team', 'id'),
-                  'teampw': config.get('team', 'pass'),
-                  'header': config.get('header', 'short'),
-                  'adtype': config.get('adtype', 'skyscraper'),
-                  'color': config.get('color', 'red'),
-                  'productid': 10,
-                  'price': 0.00}
-#request = requests.get(config.get('website', 'propose_url'), params=propose_params)
-#json = request.json()
+crawler = crawler.Crawler(config)
+
+for i in range(1, 5): #range(1, 100000 + 1):
+    pass

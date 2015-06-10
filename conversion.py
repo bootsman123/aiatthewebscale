@@ -6,7 +6,7 @@ productIdMap = {x : x - 10 for x in range(10,26)}
 
 proposalNames = {"header" : headerMap, "adtype" : adtypeMap, "color" : colorMap, "productid" : productIdMap}
 
-agentMap = {"OSX" : 0, "Windows" : 1, "Linux" : 2, "Mobile" : 3}
+agentMap = {"OSX" : 0, "Windows" : 1, "Linux" : 2, "mobile" : 3}
 languageMap = {"EN" : 0, "NL" : 1, "GE" : 2, "NA" : 3}
 ageMap = {x : x - 10 for x in range(10,111 )}
 ageMap.update({999 : 101})

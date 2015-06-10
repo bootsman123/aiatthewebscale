@@ -42,6 +42,8 @@ class Crawler(object):
             'runid': i,
             'teamid': self._config.get('team', 'id'),
             'teampw': self._config.get('team', 'pass'),
-        }.update(parameters)
+        }
+        params.update(parameters)
+
         request = requests.get(self._config.get('website', 'propose_url'), params=params)
         return request.json()

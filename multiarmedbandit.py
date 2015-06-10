@@ -1,5 +1,5 @@
 
-from epsilongreedy import EpsilonGreedy as Policy
+from policies import EpsilonGreedy as Policy
 from conversion import proposalI2S, contextS2I
 
 class MultiArmedBandit(object):
@@ -35,12 +35,12 @@ class MultiArmedBandit(object):
            context = contextS2I( context )
            
            self.header = self.headerPol.choose_arm(context, self.contexts, self.pages, self.scores)
-           self.adtype = self.adtypepPol.choose_arm(context, self.contexts, self.pages, self.scores)
+           self.adtype = self.adtypePol.choose_arm(context, self.contexts, self.pages, self.scores)
            self.color = self.colorPol.choose_arm(context, self.contexts, self.pages, self.scores)
            self.productId = self.productIdPol.choose_arm(context, self.contexts, self.pages, self.scores)
            
            
-           proposal = {"header" : self.header, "adtype" : self.adtype, "color" : self.color, "productid" : self.productid}
+           proposal = {"header" : self.header, "adtype" : self.adtype, "color" : self.color, "productid" : self.productId}
            self.contexts.append(context)
            self.pages.append(proposal)
            
@@ -54,7 +54,7 @@ class MultiArmedBandit(object):
     def update(self, scorenum):
          """Saves the score of the previous propose call
          score should be an int"""
-         self.score.append(scorenum)
+         self.scores.append(scorenum)
          self.headerPol.update(self.header, scorenum)
          self.adtypePol.update(self.adtype, scorenum)
          self.colorPol.update(self.color, scorenum)

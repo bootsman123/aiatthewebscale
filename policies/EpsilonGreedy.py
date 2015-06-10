@@ -1,7 +1,7 @@
 import numpy as np
 from policies.policy import Policy
 
-class EpsilonGreedy(Policy)):
+class EpsilonGreedy(Policy):
     def __init__(self,n_arms,epsilon_decay=50):
         self.n = n_arms
         self.counts = [0] * self.n  # example: number of views

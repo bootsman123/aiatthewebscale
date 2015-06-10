@@ -2,8 +2,9 @@ import configparser
 import crawler
 import pymongo
 
-import time
 import logging
+
+import matplotlib.pyplot as plot
 
 import multiarmedbandit
 
@@ -35,8 +36,9 @@ mab = multiarmedbandit.MultiArmedBandit()
 
 price = 1
 reward = 0
+rewards = []
 
-totalI = 100
+totalI = 500
 for i in range(1, totalI + 1): #100001
     if i % 25 == 0:
         logger.info('At interaction {i} for runId {runId}'.format(i = i, runId = runId))
@@ -55,6 +57,7 @@ for i in range(1, totalI + 1): #100001
     mab.update(success)
 
     reward = reward + success * price
+    rewards.append(reward)
 
     # Update event.
     event = {}
@@ -64,7 +67,12 @@ for i in range(1, totalI + 1): #100001
     event.update(effect)
     event.update({'proposal': proposal})
 
-    db['events'].insert(event)
+    #db['events'].insert(event)
 
 logger.info('Total interactions: {0}'.format(totalI))
 logger.info('Total reward: {0}'.format(reward))
+
+plot.plot(rewards)
+plot.ylabel('Cumulative reward')
+plot.xlabel('Number of interactions')
+plot.show()

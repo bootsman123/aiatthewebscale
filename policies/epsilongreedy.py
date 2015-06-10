@@ -9,7 +9,7 @@ class EpsilonGreedy(Policy):
         self.decay = epsilon_decay
         
 
-    def choose_arm(self,context, contexts, proposals, scores):
+    def choose_arm(self, context):
         """Choose an arm for testing"""
         epsilon = self.get_epsilon()
         if np.random.random() > epsilon:
@@ -19,7 +19,7 @@ class EpsilonGreedy(Policy):
             # Explore (test all arms)
             return np.random.randint(self.n)
 
-    def update(self,arm,reward):
+    def update(self, arm, context, reward):
         """Update an arm with some reward value""" # Example: click = 1; no click = 0
         self.counts[arm] = self.counts[arm] + 1
         n = self.counts[arm]

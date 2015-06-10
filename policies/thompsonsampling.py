@@ -1,4 +1,31 @@
-from policies.policy import Policy
-
+from policies import Policy
+import numpy as np
+import numpy.random as random
+from math import sqrt, log
+		
 class ThompsonSampling(Policy):
-    pass
+    def __init__(self , n_arms, R = 1.0, epsilon = 0.5, delta = 0.1):
+        self.n = n_arms
+        self.d = 5 + 1 # @TODO: Fugly.
+        self.B = np.eye(self.d)
+        self.Binv = np.linalg.inv(self.B)
+        self.mu = np.zeros(self.d)
+        self.f = np.zeros(self.d)
+        self.v = R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
+
+    def choose_arm(self, context):
+        muc = random.multivariate_normal(self.mu, self.v**2.0 * self.Binv)
+        b = np.hstack((list(context.values()), 0))
+        rewards = np.zeros(self.n)
+        for i in range(self.n):
+            b[-1] = i
+            rewards[i] = np.dot(b, muc)
+		
+        return np.argmax(rewards)
+		
+    def update(self, arm, context, reward):
+        b = np.hstack((list(context.values()), arm))
+        self.B = self.B + np.outer(b, b)
+        self.Binv = np.linalg.inv(self.B)
+        self.f = self.f + (b * reward)
+        self.mu = np.dot(self.Binv, self.f)

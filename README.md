@@ -1,2 +1,2 @@
-= Project page for the course AI at the Webscale
+# Project page for the course AI at the Webscale
 Test...

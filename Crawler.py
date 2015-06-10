@@ -1,4 +1,5 @@
 import requests
+import collections
 
 class Crawler(object):
     """
@@ -21,7 +22,7 @@ class Crawler(object):
             'teampw': self._config.get('team', 'pass')
         }
         request = requests.get(self._config.get('website', 'context_url'), params=params)
-        return request.json()
+        return request.json(object_pairs_hook=collections.OrderedDict)
 
     """
     'Proposes' a new page to the user for the given run and interaction, and returns the behavioral response of the user.

@@ -8,6 +8,10 @@ import matplotlib.pyplot as plot
 
 import multiarmedbandit
 
+# @TODO: Test if both sampling methods work (Bas)
+# @TODO: Better visualization (Bas)
+# @TODO: Implement probit model (Fenno)
+
 # Load configuration.
 config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
 config.read('configuration.ini')

@@ -1,9 +1,3 @@
-# Store in MongoDB
-# users:
-# - runid
-# - i
-# - context
-
 import requests
 
 class Crawler(object):

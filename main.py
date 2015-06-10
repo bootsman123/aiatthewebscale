@@ -2,7 +2,7 @@ import configparser
 import crawler
 import pymongo
 
-import timeit
+import time
 
 import multiarmedbandit
 
@@ -22,20 +22,19 @@ runId = 1 #random.randint(1, 1e4)
 
 # Connect to database.
 client = pymongo.MongoClient(config.get('database', 'host'), config.getint('database', 'port'))
-#db = client['aiatthewebscale']
+db = client['aiatthewebscale']
 
 cw = crawler.Crawler(config)
-#users = []
 mab = multiarmedbandit.MultiArmedBandit()
 
 price = 1
 reward = 0
 
 # Timing.
-start = timeit.timeit()
+start = time.clock()
 
-for i in range(1, 100001):
-    if i % 10 == 0:
+for i in range(1, 101): #100001
+    if i % 25 == 0:
         print('At {0}'.format(i))
 
     context = cw.get(runId, i)
@@ -49,18 +48,19 @@ for i in range(1, 100001):
 
     reward = reward + success * price
 
-    #user = {}
-    #user['runid'] = runId
-    #user['i'] = i
-    #user.update(context)
+    # Update event.
+    event = {}
+    event['runid'] = runId
+    event['i'] = i
+    event.update(context)
+    event.update(effect)
+    event.update({'proposal': proposal})
 
-    #users.append(user)
-
-#db['users'].insert_many(users)
+    db['events'].insert(event)
 
 # Timing.
-end = timeit.timeit()
+end = time.clock()
 
-print(end-start)
+print('Elapsed time: {0}s'.format(round(end - start, 2)))
 
-print('Reward: ' + reward)
+print('Reward: {0}'.format(reward))

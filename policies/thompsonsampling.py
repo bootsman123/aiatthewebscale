@@ -1,4 +1,4 @@
-from policies.policy import Policy
+from policies.policy2 import Policy
 
 class ThompsonSampling(Policy):
     pass

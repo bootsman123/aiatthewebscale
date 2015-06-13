@@ -51,7 +51,7 @@ for i in range(1, totalI + 1): #100001
     context = cw.get(runId, i)
 
     # Generate a proposal.
-    proposal = mab.propose(context['context'], price=price)
+    proposal = mab.propose(list(context['context'].values()), price=price)
 
     # Retrieve effect based on proposal.
     effect = cw.propose(runId, i, proposal)

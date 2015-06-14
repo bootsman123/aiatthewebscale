@@ -12,13 +12,20 @@ import numpy as np
 from policies.epsilongreedy import EpsilonGreedy
 from policies.thompsonsampling import ThompsonSampling
 
-K = 3
-A = 3
-R = np.array([[0.33, 0.34, 0.33], [0.8, 0.1, 0.1], [0.1, 0.1, 0.8]])
-N = 1000
+# With context.
+#K = 3
+#A = 4
+#R = np.array([[0.25, 0.25, 0.25, 0.25], [0.7, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.7]])
+
+# Without context.
+K = 1
+A = 4
+R = np.array([[0.1, 0.1, 0.7, 0.1]])
+
+N = 10000
 
 # Run contextual multi-armed bandit.
-policy = ThompsonSampling(A)
+policy = EpsilonGreedy(A)
 arms = np.zeros((K, A))
 
 for index in range(1, N + 1):
@@ -29,8 +36,9 @@ for index in range(1, N + 1):
     a = policy.choose_arm([k])
 
     # Compute reward.
+    rb = np.random.choice(A, p=R[k, :]) == a # Discrete (binary): [0, 1]
     rd = np.random.choice(A, p=R[k, :]) # Discrete: [0..A)
-    #rc = R[k, a] # Continuous.
+    rc = R[k, a] # Continuous.
 
     policy.update(a, [k], rd)
 
@@ -42,7 +50,7 @@ print(R)
 
 np.set_printoptions(precision=2)
 print('Summed distribution of chosen arms using a policy:')
-print(np.divide(arms, np.sum(arms, axis=1).reshape(A, 1)))
+print(np.divide(arms, np.sum(arms, axis=1).reshape(K, 1)))
 
 
 

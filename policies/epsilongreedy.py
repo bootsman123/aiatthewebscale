@@ -7,10 +7,8 @@ class EpsilonGreedy(Policy):
         self.counts = [0] * self.n  # example: number of views
         self.values = [0.] * self.n # example: number of clicks / views
         self.decay = epsilon_decay
-        
 
-    def choose_arm(self, context):
-        """Choose an arm for testing"""
+    def choose_arm(self, context = None):
         epsilon = self.get_epsilon()
         if np.random.random() > epsilon:
             # Exploit (use best arm)
@@ -19,8 +17,7 @@ class EpsilonGreedy(Policy):
             # Explore (test all arms)
             return np.random.randint(self.n)
 
-    def update(self, arm, context, reward):
-        """Update an arm with some reward value""" # Example: click = 1; no click = 0
+    def update(self, arm, reward, context = None):
         self.counts[arm] = self.counts[arm] + 1
         n = self.counts[arm]
         value = self.values[arm]

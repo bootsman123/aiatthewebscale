@@ -14,7 +14,7 @@ class GibbsSampling(Policy):
         self.y = np.zeros((0))
         self.X = np.zeros((0, self.d))
 
-        self.stdnormal = multivariate_normal(mean=np.zeros((self.d)), cov = np.eye(self.d))
+        #self.stdnormal = multivariate_normal(mean=np.zeros((self.d)), cov = np.eye(self.d))
 
     def choose_arm(self, context, lower=-20):
         mean = np.dot(self.B, np.dot(self.X.T, self.y ))

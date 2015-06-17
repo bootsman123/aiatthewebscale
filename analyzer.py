@@ -27,13 +27,16 @@ class Analyzer(object):
             arm  = self._policy.choose_arm()
 
             # Compute reward.
-            reward = self._rewards[arm]
+            reward = self._rewards[arm] # Continuous.
 
-            # Update arm.
-            self._policy.update_arm(arm, reward)
+            # Update policy.
+            self._policy.update(arm, reward)
 
             # Update history.
             arms[t] = arm
             rewards[t] = reward
 
         return arms, rewards
+
+class ContextualAnalyzer(object):
+    pass

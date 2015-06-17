@@ -1,11 +1,14 @@
 #from policies.thompsonsampling import ThompsonSampling as Policy
-from policies.epsilongreedy import EpsilonGreedy as Policy
+from policies.epsilongreedy import EpsilonGreedy as DefaultPolicy
 from conversion import proposalI2S, contextS2I
 
 class MultiArmedBandit(object):
     
-    def __init__(self):
+    def __init__(self, Policy = None):
         self._context = {}
+
+        if Policy is None:
+            Policy = DefaultPolicy
 
         self.headerPol = Policy(3)
         self.adtypePol = Policy(3)

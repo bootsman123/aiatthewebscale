@@ -4,16 +4,22 @@ import numpy.random as random
 from scipy.stats import norm
 		
 class GibbsSampling(Policy):
-    def __init__(self , n_arms, context_size=0):
-        self.n = n_arms
-        self.d = context_size + 1
+    def __init__(self , numberOfArms, numberOfContextVariables = 0):
+        """
+        Construct a new Gibbs Sampling policy.
+        :param numberOfArms: Number of arms.
+        :param numberOfContextVariables: Number of context variables.
+        :return:
+        """
+        self.n = numberOfArms
+        self.d = numberOfContextVariables + 1
         self.B = np.eye(self.d)
         self.Binv = np.linalg.inv(self.B)
         self.beta = np.zeros(self.d)
         self.y = np.zeros((0))
         self.X = np.zeros((0, self.d))
 
-    def choose_arm(self, context = []):
+    def choose(self, context = []):
         mean = np.dot(self.B, np.dot(self.X.T, self.y ))
         self.beta = random.multivariate_normal(mean, self.B)
 
@@ -36,3 +42,12 @@ class GibbsSampling(Policy):
             draw = random.normal(np.dot(b.T, self.beta), 1)
 
         self.y = np.hstack((self.y, draw))
+
+    def numberOfArms(self):
+        return self.n
+
+    def numberOfContextVariables(self):
+        return self.d - 1
+
+    def name(self):
+        return "GibbsSampling"

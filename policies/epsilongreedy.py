@@ -2,30 +2,40 @@ import numpy as np
 from policies.policy import Policy
 
 class EpsilonGreedy(Policy):
-    def __init__(self,n_arms,epsilon_decay=50):
-        self.n = n_arms
-        self.counts = [0] * self.n  # example: number of views
-        self.values = [0.] * self.n # example: number of clicks / views
-        self.decay = epsilon_decay
+    def __init__(self, numberOfArms, epsilonDecay = 50):
+        """
+        Construct a new epsilon-Greedy policy.
+        :param numberOfArms: Number of arms.
+        :param epsilonDecay: Decay of epsilon.
+        :return:
+        """
+        self.n = numberOfArms
+        self.counts = [0] * self.n
+        self.values = [0.] * self.n
+        self.decay = epsilonDecay
 
-    def choose_arm(self, context = None):
-        epsilon = self.get_epsilon()
-        if np.random.random() > epsilon:
-            # Exploit (use best arm)
+    def choose(self, context = []):
+        if np.random.random() > self.getEpsilon():
+            # Exploit.
             return np.argmax(self.values)
         else:
-            # Explore (test all arms)
+            # Explore.
             return np.random.randint(self.n)
 
-    def update(self, arm, reward, context = None):
+    def update(self, arm, reward, context = []):
         self.counts[arm] = self.counts[arm] + 1
         n = self.counts[arm]
         value = self.values[arm]
-        # Running product
+
         new_value = ((n - 1) / float(n)) * value + (1 / float(n)) * reward
         self.values[arm] = new_value
 
-    def get_epsilon(self):
-        """Produce epsilon"""
+    def getEpsilon(self):
         total = np.sum(self.counts)
         return float(self.decay) / (total + float(self.decay))
+
+    def numberOfArms(self):
+        return self.n
+
+    def name(self):
+        return "EpsilonGreedy"

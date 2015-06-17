@@ -21,7 +21,7 @@ class GibbsSampling(Policy):
         rewards = np.zeros(self.n)
         for i in range(self.n):
             b[-1] = i
-            rewards[i] = norm.cdf(np.dot(self.b.T, self.beta), 0, 1)
+            rewards[i] = norm.cdf(np.dot(b.T, self.beta), 0, 1)
 		
         return np.argmax(rewards)
 		

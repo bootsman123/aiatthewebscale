@@ -4,7 +4,7 @@ import numpy.random as random
 from scipy.stats import norm
 		
 class GibbsSampling(Policy):
-    def __init__(self , n_arms, context_size=4):
+    def __init__(self , n_arms, context_size=0):
         self.n = n_arms
         self.d = context_size + 1
         self.B = np.eye(self.d)
@@ -13,7 +13,7 @@ class GibbsSampling(Policy):
         self.y = np.zeros((0))
         self.X = np.zeros((0, self.d))
 
-    def choose_arm(self, context):
+    def choose_arm(self, context = []):
         mean = np.dot(self.B, np.dot(self.X.T, self.y ))
         self.beta = random.multivariate_normal(mean, self.B)
 
@@ -25,7 +25,7 @@ class GibbsSampling(Policy):
 		
         return np.argmax(rewards)
 		
-    def update(self, arm, context, reward):    
+    def update(self, arm, reward, context = []):
         b = np.hstack((context, arm))
         self.X = np.vstack((self.X, b))
         self.Binv = self.Binv + np.dot(self.X.T, self.X)

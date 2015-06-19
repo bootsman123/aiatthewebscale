@@ -1,4 +1,5 @@
-from policies import Policy
+from policies.policy import Policy
+
 import numpy as np
 import numpy.random as random
 from math import sqrt, log

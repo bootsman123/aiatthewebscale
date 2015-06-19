@@ -1,19 +1,15 @@
-import configparser
-import crawler
-import pymongo
-
+from configparser import ConfigParser
 import logging
 
-import matplotlib.pyplot as plot
+import pymongo
 
-import multiarmedbandit
+from app.crawler import Crawler
+from app.multiarmedbandit import MultiArmedBandit
 
-# @TODO: Test if both sampling methods work (Bas)
-# @TODO: Better visualization (Bas)
-# @TODO: Implement probit model (Fenno)
+
 
 # Load configuration.
-config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+config = ConfigParser(interpolation=ConfigParser.ExtendedInterpolation())
 config.read('configuration.ini')
 
 # Setup logging.
@@ -22,11 +18,11 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # Get configuration values.
-#headers = [config.get('header', header) for header in config.options('header')]
-#adTypes = [config.get('adtype', adtype) for adtype in config.options('adtype')]
-#colors = [config.get('color', color) for color in config.options('color')]
-#productIds = range(config.getint('productid', 'min'), config.getint('productid', 'max') + 1, config.getint('productid', 'step'))
-#price = range(config.getint('price', 'min'), config.getint('price', 'max') + 1, config.getint('price', 'step')) # Currently only integers, while they should be floats up to 2 decimals.
+headers = [config.get('header', header) for header in config.options('header')]
+adTypes = [config.get('adtype', adtype) for adtype in config.options('adtype')]
+colors = [config.get('color', color) for color in config.options('color')]
+productIds = range(config.getint('productid', 'min'), config.getint('productid', 'max') + 1, config.getint('productid', 'step'))
+price = range(config.getint('price', 'min'), config.getint('price', 'max') + 1, config.getint('price', 'step')) # Currently only integers, while they should be floats up to 2 decimals.
 
 # Crawl pages for a given runId and interaction.
 runId = 1 #random.randint(1, 1e4)
@@ -35,8 +31,8 @@ runId = 1 #random.randint(1, 1e4)
 client = pymongo.MongoClient(config.get('database', 'host'), config.getint('database', 'port'))
 db = client['aiatthewebscale']
 
-cw = crawler.Crawler(config)
-mab = multiarmedbandit.MultiArmedBandit()
+crawler = Crawler(config)
+multiarmedbandit = MultiArmedBandit()
 
 price = 1
 reward = 0

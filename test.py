@@ -1,11 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from policies.epsilongreedy import EpsilonGreedy
-from policies.thompsonsampling import ThompsonSampling
 from policies.gibbssampling import GibbsSampling
+from tools.analyzer import Analyzer
 
-from analyzer import Analyzer
 
 # With context.
 '''

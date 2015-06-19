@@ -1,5 +1,6 @@
-import numpy as np
 from policies.policy import Policy
+
+import numpy as np
 
 class EpsilonGreedy(Policy):
     def __init__(self, numberOfArms, epsilonDecay = 50):

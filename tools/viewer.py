@@ -1,7 +1,7 @@
 import configparser
-import crawler
+
 import pymongo
-import matplotlib
+
 
 # Load configuration.
 config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())

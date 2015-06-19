@@ -1,6 +1,6 @@
 #from policies.thompsonsampling import ThompsonSampling as Policy
 from policies.epsilongreedy import EpsilonGreedy as DefaultPolicy
-from conversion import proposalI2S, contextS2I
+from app.conversion import proposalI2S, contextS2I
 
 class MultiArmedBandit(object):
     

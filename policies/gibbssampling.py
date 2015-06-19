@@ -50,4 +50,4 @@ class GibbsSampling(Policy):
         return self.d - 1
 
     def name(self):
-        return "GibbsSampling"
+        return "Gibbs Sampling"

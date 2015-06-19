@@ -38,4 +38,4 @@ class EpsilonGreedy(Policy):
         return self.n
 
     def name(self):
-        return "EpsilonGreedy"
+        return "Epsilon Greedy"

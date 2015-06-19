@@ -46,4 +46,4 @@ class ThompsonSampling(Policy):
         return self.d - 1
 
     def name(self):
-        return "ThompsonSampling"
+        return "Thompson Sampling"

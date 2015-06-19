@@ -12,7 +12,7 @@ class GibbsSampling(Policy):
         :return:
         """
         self.n = numberOfArms
-        self.d = numberOfContextVariables + 1
+        self.d = numberOfContextVariables + self.n
         self.B = np.eye(self.d)
         self.Binv = np.linalg.inv(self.B)
         self.beta = np.zeros(self.d)
@@ -23,16 +23,18 @@ class GibbsSampling(Policy):
         mean = np.dot(self.B, np.dot(self.X.T, self.y ))
         self.beta = random.multivariate_normal(mean, self.B)
 
-        b = np.hstack((context, 0))
+        b = np.hstack((np.zeros(self.n), context))
         rewards = np.zeros(self.n)
         for i in range(self.n):
-            b[-1] = i
+            b[i] = 1
             rewards[i] = norm.cdf(np.dot(b.T, self.beta), 0, 1)
+            b[i] = 0
 		
         return np.argmax(rewards)
 		
     def update(self, arm, reward, context = []):
-        b = np.hstack((context, arm))
+        b = np.hstack((np.zeros(self.n), context))
+        b[arm] = 1
         self.X = np.vstack((self.X, b))
         self.Binv = self.Binv + np.dot(self.X.T, self.X)
         self.B = np.linalg.inv(self.Binv)
@@ -47,7 +49,7 @@ class GibbsSampling(Policy):
         return self.n
 
     def numberOfContextVariables(self):
-        return self.d - 1
+        return self.d - self.n
 
     def name(self):
         return "Gibbs Sampling"

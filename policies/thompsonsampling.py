@@ -5,7 +5,7 @@ import numpy.random as random
 from math import sqrt, log
 		
 class ThompsonSampling(Policy):
-    def __init__(self, numberOfArms, numberOfContextVariables = 0, R = 1.0, epsilon = 0.5, delta = 0.1, ):
+    def __init__(self, numberOfArms, numberOfContextVariables = 0, R = 0.05, epsilon = 0.25, delta = 0.1, ):
         """
         Construct a new Thompson Sampling policy.
         :param numberOfArms: Number of arms.
@@ -16,25 +16,27 @@ class ThompsonSampling(Policy):
         :return:
         """
         self.n = numberOfArms
-        self.d = numberOfContextVariables + 1
+        self.d = numberOfContextVariables + self.n
         self.B = np.eye(self.d)
         self.Binv = np.linalg.inv(self.B)
         self.mu = np.zeros(self.d)
         self.f = np.zeros(self.d)
-        self.v = R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
+        self.v = 1#R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
 
     def choose(self, context = []):
         muc = random.multivariate_normal(self.mu, self.v**2.0 * self.Binv)
-        b = np.hstack((context, 0))
+        b = np.hstack((np.zeros(self.n), context))
         rewards = np.zeros(self.n)
         for i in range(self.n):
-            b[-1] = i
+            b[i] = 1
             rewards[i] = np.dot(b, muc)
+            b[i] = 0
 
         return np.argmax(rewards)
 		
     def update(self, arm, reward, context = []):
-        b = np.hstack((context, arm))
+        b = np.hstack((np.zeros(self.n), context))
+        b[arm] = 1
         self.B = self.B + np.outer(b, b)
         self.Binv = np.linalg.inv(self.B)
         self.f = self.f + (b * reward)
@@ -44,7 +46,7 @@ class ThompsonSampling(Policy):
         return self.n
 
     def numberOfContextVariables(self):
-        return self.d - 1
+        return self.d - self.n
 
     def name(self):
         return "Thompson Sampling"

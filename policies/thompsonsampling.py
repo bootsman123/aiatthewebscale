@@ -38,7 +38,6 @@ class ThompsonSampling(Policy):
         return np.unravel_index(np.argmax(rewards), self.n)
 		
     def update(self, arm, reward, context = []):
-
         b = createContext(context, arm, self.n_context, self.n)
         self.B = self.B + np.outer(b, b)
         self.Binv = np.linalg.inv(self.B)
@@ -49,7 +48,7 @@ class ThompsonSampling(Policy):
         return self.n
 
     def numberOfContextVariables(self):
-        return self.d
+        return self.n_context
 
     def name(self):
         return "Thompson Sampling"

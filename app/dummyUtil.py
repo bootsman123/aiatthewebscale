@@ -10,6 +10,9 @@ def createContext(context, arm, n_context, n_arm):
     :param n_arm: Maximum number of arms, for example: [3,3,5,16]
     :return: An array of ordered dummy variables, 1 if the combination of arm/context is fulfulled
     """
+
+    #print context, arm, n_context, n_arm
+
     contextResult = np.zeros(np.sum(np.outer(n_arm, n_context)))
     cumsumarm = np.hstack((0, np.cumsum(np.sum(np.outer(n_arm, n_context), axis=0))))
     for i, a in enumerate(arm):
@@ -21,5 +24,7 @@ def createContext(context, arm, n_context, n_arm):
             contextResult[ armoffset + contextoffset + (a*n_context[j]) + c ] = 1
     return contextResult
 
-#print createContext([0,0,9,2], [0], [4,4,11,3], [3])
-#print createContext([1], [2], [5], [6])
+if __name__ == '__main__':
+    #print createContext([0,0,9,2], [0], [4,4,11,3], [3])
+    #print createContext([1], [2], [5], [6])
+    print createContext([5], [3], [3], [4])

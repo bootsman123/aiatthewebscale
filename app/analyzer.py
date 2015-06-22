@@ -35,19 +35,20 @@ class Analyzer(object):
         :return: arms, rewards, context (will be empty if no context is used)
         """
         # History variables.
+
         arms = np.empty(self._T)
         rewards = np.empty(self._T)
-        contexts = np.empty((self._T, self._policy.numberOfContextVariables()))
+        contexts = np.empty((self._T, self._policy.numberOfContextVariables()[0]))
 
         for t in range(self._T):
-            if self._policy.numberOfContextVariables() > 0:
+            if self._policy.numberOfContextVariables()[0] > 0:
                 # Generate context.
-                context = np.random.choice(self._policy.numberOfContextVariables())
+                context = np.random.choice(self._policy.numberOfContextVariables()[0])
 
                 arm = self._policy.choose([context])[0]
                 reward = self._payoffs[context, arm]
 
-                self._policy.update(arms, reward, [context])
+                self._policy.update([arm], reward, [context])
             else:
                 context = 0
 

@@ -1,8 +1,8 @@
 __author__ = 'fenno_000'
 
-#from policies.thompsonsampling import ThompsonSampling as Policy
-from policies.epsilongreedy import EpsilonGreedy as DefaultPolicy
-from app.conversion import proposalI2S, contextS2I
+from policies.thompsonsampling import ThompsonSampling as DefaultPolicy
+#from policies.epsilongreedy import EpsilonGreedy as DefaultPolicy
+from app.conversion import proposalI2S, contextNumbers, contextS2I
 
 class MergedMAB(object):
 
@@ -12,7 +12,9 @@ class MergedMAB(object):
         if Policy is None:
             Policy = DefaultPolicy
 
-        self.proposalPol = Policy([3,3,5,16], **kwargs)
+        #numberOfArms = [3,3,5,16], numberOfContextVariables = [4,4,3,102],
+
+        self.proposalPol = Policy(**kwargs)
 
         self.header = 0
         self.adtype = 0

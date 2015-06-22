@@ -53,6 +53,10 @@ def intToDummy(input, maximum):
     list[input] = 1
     return list
 
+def contextS2L(context):
+    icon = contextS2I(context)
+    return np.array([icon[v] for v in contextFields])
+
 def contextS2D(context):
     intcontext = contextS2I(context)
     result = np.empty((0))

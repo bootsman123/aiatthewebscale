@@ -1,5 +1,5 @@
-#from policies.thompsonsampling import ThompsonSampling as Policy
-from policies.epsilongreedy import EpsilonGreedy as DefaultPolicy
+from policies.thompsonsampling import ThompsonSampling as DefaultPolicy
+#from policies.epsilongreedy import EpsilonGreedy as DefaultPolicy
 from app.conversion import proposalI2S, contextS2I
 
 class MultiArmedBandit(object):
@@ -10,10 +10,10 @@ class MultiArmedBandit(object):
         if Policy is None:
             Policy = DefaultPolicy
 
-        self.headerPol = Policy(3, **kwargs)
-        self.adtypePol = Policy(3, **kwargs)
-        self.colorPol = Policy(5, **kwargs)
-        self.productIdPol = Policy(16, **kwargs)
+        self.headerPol = Policy([3], **kwargs)
+        self.adtypePol = Policy([3], **kwargs)
+        self.colorPol = Policy([5], **kwargs)
+        self.productIdPol = Policy([16], **kwargs)
         
         self.header = 0
         self.adtype = 0
@@ -32,15 +32,17 @@ class MultiArmedBandit(object):
            """
            self._context = context
 
-           self.header = self.headerPol.choose(self._context)
-           self.adtype = self.adtypePol.choose(self._context)
-           self.color = self.colorPol.choose(self._context)
-           self.productId = self.productIdPol.choose(self._context)
+           self.header = self.headerPol.choose(self._context)[0]
+           self.adtype = self.adtypePol.choose(self._context)[0]
+           self.color = self.colorPol.choose(self._context)[0]
+           self.productId = self.productIdPol.choose(self._context)[0]
 
            proposal = {"header" : self.header, "adtype" : self.adtype, "color" : self.color, "productid" : self.productId}
            
            if price is not None:
                proposal["price"] = price
+
+           print proposal
            
            return proposalI2S( proposal )
            
@@ -49,8 +51,8 @@ class MultiArmedBandit(object):
     :param success
     """
     def update(self, success):
-         self.headerPol.update(self.header, success, self._context)
-         self.adtypePol.update(self.adtype, success, self._context )
-         self.colorPol.update(self.color, success, self._context)
-         self.productIdPol.update(self.productId, success, self._context )
+         self.headerPol.update([self.header], success, self._context)
+         self.adtypePol.update([self.adtype], success, self._context )
+         self.colorPol.update([self.color], success, self._context)
+         self.productIdPol.update([self.productId], success, self._context )
          

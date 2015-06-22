@@ -2,10 +2,12 @@ from policies.policy import Policy
 
 import numpy as np
 import numpy.random as random
+from itertools import product
+from app.dummyUtil import createContext
 from math import sqrt, log
 		
 class ThompsonSampling(Policy):
-    def __init__(self, numberOfArms, numberOfContextVariables = 0, R = 0.05, epsilon = 0.25, delta = 0.1, ):
+    def __init__(self, numberOfArms, numberOfContextVariables, v = 1 ):
         """
         Construct a new Thompson Sampling policy.
         :param numberOfArms: Number of arms.
@@ -15,28 +17,29 @@ class ThompsonSampling(Policy):
         :param delta:
         :return:
         """
-        self.n = numberOfArms
-        self.d = numberOfContextVariables + self.n
+        self.n = np.array(numberOfArms)
+        self.n_context = np.array(numberOfContextVariables)
+        self.d = np.sum(np.outer(self.n_context, self.n))
+
         self.B = np.eye(self.d)
         self.Binv = np.linalg.inv(self.B)
         self.mu = np.zeros(self.d)
         self.f = np.zeros(self.d)
-        self.v = 1#R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
+        self.v = v #R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
 
     def choose(self, context = []):
         muc = random.multivariate_normal(self.mu, self.v**2.0 * self.Binv)
-        b = np.hstack((np.zeros(self.n), context))
         rewards = np.zeros(self.n)
-        for i in range(self.n):
-            b[i] = 1
-            rewards[i] = np.dot(b, muc)
-            b[i] = 0
 
-        return np.argmax(rewards)
+        for i, arm in enumerate(product(*[range(a) for a in self.n])):
+            b = createContext(context, arm, self.n_context, self.n)
+            rewards[arm] = np.dot(b, muc)
+
+        return np.unravel_index(np.argmax(rewards), self.n)
 		
     def update(self, arm, reward, context = []):
-        b = np.hstack((np.zeros(self.n), context))
-        b[arm] = 1
+
+        b = createContext(context, arm, self.n_context, self.n)
         self.B = self.B + np.outer(b, b)
         self.Binv = np.linalg.inv(self.B)
         self.f = self.f + (b * reward)
@@ -46,7 +49,7 @@ class ThompsonSampling(Policy):
         return self.n
 
     def numberOfContextVariables(self):
-        return self.d - self.n
+        return self.d
 
     def name(self):
         return "Thompson Sampling"

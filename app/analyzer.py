@@ -15,6 +15,7 @@ class Analyzer(object):
         self._payoffs = np.array(payoffs)
         self._T = T
 
+        '''
         # Check payoff matrix dimensions
         if self._payoffs.ndim == 1 and self._payoffs.shape[0] != self._policy.numberOfArms():
             raise ValueError("Invalid dimensions of the payoffs matrix. Expected ({0},), gotten ({1},).".format(self._policy.numberOfArms(),
@@ -26,6 +27,7 @@ class Analyzer(object):
                                                                                                                       self._payoffs.shape[1]))
         elif self._payoffs.ndim != 1 and self._payoffs.ndim != 2:
             raise ValueError("Invalid dimensions of the payoffs matrix.")
+        '''
 
     def analyze(self):
         """
@@ -40,14 +42,12 @@ class Analyzer(object):
         for t in range(self._T):
             if self._policy.numberOfContextVariables() > 0:
                 # Generate context.
-                variable = np.random.choice(self._policy.numberOfContextVariables())
-                context = np.zeros(self._policy.numberOfContextVariables())
-                context[variable] = 1
+                context = np.random.choice(self._policy.numberOfContextVariables())
 
-                arm  = self._policy.choose(context)
-                reward = self._payoffs[variable, arm]
+                arm = self._policy.choose([context])[0]
+                reward = self._payoffs[context, arm]
 
-                self._policy.update(arm, reward, context)
+                self._policy.update(arms, reward, [context])
             else:
                 context = 0
 

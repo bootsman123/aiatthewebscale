@@ -2,11 +2,11 @@ import requests
 import collections
 
 class Crawler(object):
-    def __init__(self, config):
+    def __init__(self, settings):
         """
         Initialize a new crawler.
         """
-        self._config = config
+        self._settings = settings
 
     def get(self, runId, i):
         """
@@ -18,10 +18,10 @@ class Crawler(object):
         params = {
             'runid': runId,
             'i': i,
-            'teamid': self._config.get('team', 'id'),
-            'teampw': self._config.get('team', 'pass')
+            'teamid': self._settings.TEAM_ID,
+            'teampw': self._settings.TEAM_PASS
         }
-        request = requests.get(self._config.get('website', 'context_url'), params=params)
+        request = requests.get(self._settings.CONTEXT_URL, params=params)
         return request.json(object_pairs_hook=collections.OrderedDict)
 
     def propose(self, runId, i, parameters):
@@ -35,10 +35,10 @@ class Crawler(object):
         params = {
             'i': runId,
             'runid': i,
-            'teamid': self._config.get('team', 'id'),
-            'teampw': self._config.get('team', 'pass'),
+            'teamid': self._settings.TEAM_ID,
+            'teampw': self._settings.TEAM_PASS
         }
         params.update(parameters)
 
-        request = requests.get(self._config.get('website', 'propose_url'), params=params)
+        request = requests.get(self._settings.PROPOSE_URL, params=params)
         return request.json()

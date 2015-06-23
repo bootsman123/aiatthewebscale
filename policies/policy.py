@@ -17,16 +17,16 @@ class Policy(object):
         """
         pass
 
-    def numberOfArms(self):
+    def arms(self):
         """
-        Returns the number of arms of the policy.
+        Returns a list of arms of the policy.
         :return:
         """
         return 0
 
-    def numberOfContextVariables(self):
+    def context(self):
         """
-        Returns the number of context variables of the policy.
+        Returns a list of context variables of the policy.
         :return:
         """
         return 0

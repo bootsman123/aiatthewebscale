@@ -38,7 +38,7 @@ class Analyzer(object):
 
         arms = np.empty(self._T)
         rewards = np.empty(self._T)
-        contexts = np.empty((self._T, self._policy.numberOfContextVariables()[0]))
+        contexts = np.empty(self._T)
 
         for t in range(self._T):
             if self._policy.numberOfContextVariables()[0] > 0:

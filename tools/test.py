@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from policies.thompsonsampling import ThompsonSampling
 from app.analyzer import Analyzer
 
-
 # With context.
 numberOfArms = 4
 numberOfContextVariables = 3
@@ -23,13 +22,15 @@ policy = ThompsonSampling(numberOfArms)
 analyzer = Analyzer(policy, payoffs)
 arms, rewards, contexts = analyzer.analyze()
 
+print(policy.numberOfContextVariables()[0])
+
 # Plot arms.
 colors = "bgrcmykw"
-if policy.numberOfContextVariables() > 0:
-    for nContext in range(policy.numberOfContextVariables()):
-        contextIndices = np.argmax(contexts, axis = 1) == nContext
+if policy.numberOfContextVariables()[0] > 0:
+    for nContext in range(policy.numberOfContextVariables()[0]):
+        contextIndices = contexts == nContext
 
-        plt.subplot(policy.numberOfContextVariables(), 1, nContext + 1)
+        plt.subplot(policy.numberOfContextVariables()[0], 1, nContext + 1)
         plt.title('Context {0}'.format(nContext))
         plt.hist(arms[contextIndices], bins=np.arange(policy.numberOfArms() + 1), histtype='stepfilled', color=colors[nContext])
 else:
@@ -40,7 +41,7 @@ plt.show()
 # The probability of the policy to select the best arm.
 # (Only usable in case in which you know what the best arm is.)
 if policy.numberOfContextVariables() > 0:
-    for nContext in range(policy.numberOfContextVariables()):
+    for nContext in range(policy.numberOfContextVariables()[0]):
         payoffsForContext = payoffs[nContext, :]
 
         contextIndices = np.argmax(contexts, axis = 1) == nContext

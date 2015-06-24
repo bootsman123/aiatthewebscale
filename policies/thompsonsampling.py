@@ -53,14 +53,16 @@ class ThompsonSampling(Policy):
         return np.unravel_index(np.argmax(rewards), self.n_arms)
 		
     def update(self, arm, reward, context = []):
+
         b = self.createContext(context, arm)
         self.B = self.B + np.outer(b, b)
-
         tempBinv = np.linalg.inv(self.B)
+
         x = np.sum(tempBinv)
         if np.isnan(x):
             print "Found invalid matrix, B^-1 contained nan!"
             self.B = self.B - np.outer(b,b)
+            return
         else:
             self.Binv = tempBinv
 

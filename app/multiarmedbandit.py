@@ -5,7 +5,7 @@ class MultiArmedBandit(object):
     """
     Contextual multi-armed bandit.
     """
-    CONTEXTS = [102, 4, 4, 3]
+    CONTEXTS = [7, 4, 4, 3]
 
     def __init__(self, settings, **kwargs):
         """
@@ -71,7 +71,7 @@ class MergedMultiArmedBandit(object):
     Merged contextual multi-armed bandit.
     """
     ARMS = [3, 5, 3, 16]
-    CONTEXTS = [102, 4, 4, 3]
+    CONTEXTS = [7, 4, 4, 3]
 
     def __init__(self, settings, **kwargs):
         self._settings = settings

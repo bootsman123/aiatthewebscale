@@ -10,7 +10,7 @@ class Converter(object):
         """
         self._settings = settings
 
-    def __valuesToIndices(self, mapping, values):
+    def __valuesToIndices(self, mappings, values):
         """
         Convert values to indices based on a mapping.
         :param mapping:
@@ -19,15 +19,15 @@ class Converter(object):
         """
         indices = np.empty(0, dtype=np.int_)
 
-        for key, _ in mapping.items():
+        for key, _ in mappings.items():
             # Lookup the index of the value of the values in the map.
-            index = mapping[key].index(values[key])
+            index = mappings[key][0](values[key])
 
             indices = np.hstack((indices, index))
 
         return indices
 
-    def __indicesToValues(self, mapping, indices):
+    def __indicesToValues(self, mappings, indices):
         """
         Convert indices to values based on a mapping.
         :param mapping:
@@ -37,8 +37,8 @@ class Converter(object):
         values = collections.OrderedDict()
 
         i = 0
-        for key, _ in mapping.items():
-            values[key] = mapping[key][indices[i]]
+        for key, _ in mappings.items():
+            values[key] = mappings[key][1](indices[i])
 
             i = i + 1
 

@@ -37,7 +37,9 @@ class ThompsonSampling(Policy):
     def choose(self, context = []):
 
         if self.muc is None:
-            self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
+            L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+            norm = np.random.normal(size=self.d)
+            self.muc = self.mu + np.dot(L, norm)
 
         rewards = np.zeros(self.n_arms)
 
@@ -89,7 +91,9 @@ class ThompsonSampling(Policy):
         return np.hstack((self.createIntercept(context, arm), contextResult))
 
     def draw(self):
-        self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
+        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+        norm = np.random.normal(size=self.d)
+        self.muc = self.mu + np.dot(L, norm)
 
     def arms(self):
         return self.n_arms

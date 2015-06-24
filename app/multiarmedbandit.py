@@ -16,11 +16,11 @@ class MultiArmedBandit(object):
         self._settings = settings
         self._converter = Converter(self._settings)
 
-        self._adTypePolicy = ThompsonSampling(arms = [len(self.settings.AD_TYPES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._colorPolicy = ThompsonSampling(arms = [len(self.settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._headerPolicy = ThompsonSampling(arms = [len(self.settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._productIdPolicy = ThompsonSampling(arms = [len(self.settings.PRODUCT_IDS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._pricePolicy = ThompsonSampling(arms = [len(self.settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._adTypePolicy = ThompsonSampling(arms = [len(self._settings.AD_TYPES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._colorPolicy = ThompsonSampling(arms = [len(self._settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._headerPolicy = ThompsonSampling(arms = [len(self._settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._productIdPolicy = ThompsonSampling(arms = [len(self._settings.PRODUCT_IDS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
 
         self._adType = 0
         self._header = 0
@@ -43,10 +43,10 @@ class MultiArmedBandit(object):
         self._adType = self._adTypePolicy.choose(self._context)[0]
         self._color = self._colorPolicy.choose(self._context)[0]
         self._header = self._headerPolicy.choose(self._context)[0]
-        self._productId = self._productIdPolicy.choose(self._context)[0]
         self._price = self._pricePolicy.choose(self._context)[0]
+        self._productId = self._productIdPolicy.choose(self._context)[0]
 
-        indices = [self._adType, self._color, self._header, self._productId, self._price]
+        indices = [self._adType, self._color, self._header, self._price, self._productId]
         self._proposal = self._converter.indicesToProposal(indices)
 
         return self._proposal
@@ -60,8 +60,8 @@ class MultiArmedBandit(object):
         self._adTypePolicy.update([self._adType], success, self._context)
         self._colorPolicy.update([self._color], success, self._context)
         self._headerPolicy.update([self._header], success, self._context)
-        self._productIdPolicy.update([self._productId], success, self._context)
         self._pricePolicy.update([self._price], success, self._context)
+        self._productIdPolicy.update([self._productId], success, self._context)
 
 
 

@@ -36,14 +36,13 @@ crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings)
 
 # Range values.
-minRunId = 2000 # 10001
-maxRunId = 2001 # 10100
+minRunId = 2341 # 10001
+maxRunId = 2342 # 10100
 
 minI = 1
 maxI = 1000 # 100000
 
 # Statistics.
-price = 1
 rewards = np.zeros((maxRunId - minRunId + 1, maxI - minI + 1))
 
 # Timing
@@ -57,7 +56,7 @@ for runId in range(minRunId, maxRunId + 1, 1):
         context = crawler.get(runId, i)
 
         # Generate a proposal.
-        proposal = multiarmedbandit.propose(context['context'], price=price)
+        proposal = multiarmedbandit.propose(context['context'])
 
         # Retrieve effect based on proposal.
         effect = crawler.propose(runId, i, proposal)
@@ -66,11 +65,11 @@ for runId in range(minRunId, maxRunId + 1, 1):
         multiarmedbandit.update(effect['effect'])
 
         # Update statistics.
-        rewards[runId - minRunId, i - minI] = effect['effect']['Success'] * price
+        rewards[runId - minRunId, i - minI] = effect['effect']['Success'] * proposal['price']
 
 # Compute statistics.
 elapsedTime = timeit.default_timer() - startTime
 
 logger.info('Total computation time: {0}'.format(elapsedTime))
 logger.info('Total reward: {0}'.format(np.sum(rewards)))
-logger.info('Mean reward over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.mean(rewards, axis = 1)))
+logger.info('Mean reward over per run over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.mean(rewards, axis = 1)))

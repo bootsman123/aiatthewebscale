@@ -2,6 +2,7 @@ from policies.policy import Policy
 
 import numpy as np
 from itertools import product
+from scipy.stats import multivariate_normal as mv
 		
 class ThompsonSampling(Policy):
     def __init__(self, arms, contexts, R = 0.5, epsilon = 0.01, delta = 0.2):
@@ -24,21 +25,20 @@ class ThompsonSampling(Policy):
         self.f = np.zeros(self.d)
         self.v = 1 #R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
 
-    def choose(self, context = []):
-        muc = np.random.multivariate_normal(self.mu, self.v**2.0 * self.Binv)
+        self.muc = None
 
-        '''
-        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
-        norm = np.random.normal(size=self.mu.shape)
-        muc = self.mu + np.dot(L, norm)
-        '''
+    def choose(self, context = []):
+
+        if self.muc is None:
+            self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
 
         rewards = np.zeros(self.n_arms)
 
         for i, arm in enumerate(product(*[range(arm) for arm in self.n_arms])):
             b = self.createContext(context, arm)
-            rewards[arm] = np.dot(b, muc)
+            rewards[arm] = np.dot(b, self.muc)
 
+        self.muc = None
         return np.unravel_index(np.argmax(rewards), self.n_arms)
 		
     def update(self, arm, reward, context = []):
@@ -47,6 +47,17 @@ class ThompsonSampling(Policy):
         self.Binv = np.linalg.inv(self.B)
         self.f = self.f + (b * reward)
         self.mu = np.dot(self.Binv, self.f)
+
+    def createIntercept(self, context, arm):
+        contextResult = np.sum(self.n_contexts) + np.sum(self.n_arms) + 1
+        cumcontext = np.hstack((0, np.cumsum(self.n_contexts)))
+        cumarms = np.hstack((0, np.cumsum(self.n_arms)))
+        for i, c in enumerate(context):
+            contextResult[cumcontext[i] + c] = 1
+        for i, a in enumerate(arm):
+            contextResult[np.sum(self.n_arms) + cumarms[i] + a] = 1
+        contextResult[-1] = 1
+        return contextResult
 
     def createContext(self, context, arm):
         """
@@ -66,6 +77,12 @@ class ThompsonSampling(Policy):
                 #print armoffset, contextoffset, i, j, a, c, "combination: ", (c, j), ",", (a, i), " : ", armoffset + contextoffset + (a*n_context[j]) + c
                 contextResult[ armoffset + contextoffset + (a*self.n_contexts[j]) + c ] = 1
         return contextResult
+
+    def draw(self):
+        try:
+            self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
+        except np.linalg.linalg.LinAlgError:
+            self.draw()
 
     def arms(self):
         return self.n_arms

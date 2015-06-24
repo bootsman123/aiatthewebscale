@@ -31,7 +31,7 @@ class MultiArmedBandit(object):
         self._context = []
         self._proposal = []
 
-    def propose(self, context, price = 0.0):
+    def propose(self, context):
         """
         Proposes parameters for the given context.
         :param context:

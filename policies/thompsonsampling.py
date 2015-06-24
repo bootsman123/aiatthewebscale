@@ -30,6 +30,8 @@ class ThompsonSampling(Policy):
         self._cumsumcontext = [ np.hstack((0, np.cumsum(np.outer(self.n_arms, self.n_contexts)[i,:]))) for i in range(len(self.n_arms)) ]
         self._cumcontext = np.hstack((0, np.cumsum(self.n_contexts)))
         self._cumarms = np.hstack((0, np.cumsum(self.n_arms)))
+        self.done = np.sum(np.outer(self.n_arms, self.n_contexts))
+        self.dtwo = np.sum(self.n_contexts) + np.sum(self.n_arms) + 1
 
 
         self.muc = None
@@ -66,7 +68,7 @@ class ThompsonSampling(Policy):
         self.mu = np.dot(self.Binv, self.f)
 
     def createIntercept(self, context, arm):
-        contextResult = np.zeros(np.sum(self.n_contexts) + np.sum(self.n_arms) + 1)
+        contextResult = np.zeros(self.dtwo)
         for i, c in enumerate(context):
             contextResult[self._cumcontext[i] + c] = 1
         for i, a in enumerate(arm):
@@ -82,7 +84,7 @@ class ThompsonSampling(Policy):
         :param n_arm: Maximum number of arms, for example: [3,3,5,16]
         :return: An array of ordered dummy variables, 1 if the combination of arm/context is fulfilled
         """
-        contextResult = np.zeros(np.sum(np.outer(self.n_arms, self.n_contexts)))
+        contextResult = np.zeros(self.done)
         for i, a in enumerate(arm):
             armoffset = self._cumsumarm[i]
             for j, c in enumerate(context):

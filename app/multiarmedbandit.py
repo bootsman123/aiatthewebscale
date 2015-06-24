@@ -46,7 +46,7 @@ class MultiArmedBandit(object):
         self._productId = self._productIdPolicy.choose(self._context)[0]
         self._price = self._pricePolicy.choose(self._context)[0]
 
-        indices = [self._adType, self._color, self._header, price, self._productId, self._price]
+        indices = [self._adType, self._color, self._header, self._productId, self._price]
         self._proposal = self._converter.indicesToProposal(indices)
 
         return self._proposal

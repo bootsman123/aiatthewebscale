@@ -70,7 +70,7 @@ class ThompsonSampling(Policy):
     def arms(self):
         return self.n_arms
 
-    def context(self):
+    def contexts(self):
         return self.n_contexts
 
     def name(self):

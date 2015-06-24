@@ -46,11 +46,7 @@ class MultiArmedBandit(object):
         proposal['price'] = price
 
         return proposal
-           
-    """
-    Updates all the policies with the given success (either 1 or 0).
-    :param success
-    """
+
     def update(self, effect):
         """
         Updates the policies for the given effect (either success = 1 or 0).

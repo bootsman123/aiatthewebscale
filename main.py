@@ -35,11 +35,11 @@ minRunId = 2000 # 10001
 maxRunId = 2001 # 10100
 
 minI = 1
-maxI = 500 # 100000
+maxI = 1000 # 100000
 
 # Statistics.
 price = 1
-rewards = np.zeros((maxRunId - minRunId, maxI - minI))
+rewards = np.zeros((maxRunId - minRunId + 1, maxI - minI + 1))
 
 # Timing
 startTime = timeit.default_timer()
@@ -61,11 +61,11 @@ for runId in range(minRunId, maxRunId + 1, 1):
         multiarmedbandit.update(effect['effect'])
 
         # Update statistics.
-        rewards[runId, i] = effect['effect']['Success'] * price
+        rewards[runId - minRunId, i - minI] = effect['effect']['Success'] * price
 
 # Compute statistics.
 elapsedTime = timeit.default_timer() - startTime
 
 logger.info('Total computation time: {0}'.format(elapsedTime))
 logger.info('Total reward: {0}'.format(np.sum(rewards)))
-logger.info('Mean reward over {0} runs: {1}'.format(maxRunId - minRunId, np.mean(rewards, axis = 1)))
+logger.info('Mean reward over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.mean(rewards, axis = 1)))

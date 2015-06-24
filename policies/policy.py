@@ -24,7 +24,7 @@ class Policy(object):
         """
         return 0
 
-    def context(self):
+    def contexts(self):
         """
         Returns a list of context variables of the policy.
         :return:

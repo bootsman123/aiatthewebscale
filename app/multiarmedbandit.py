@@ -9,7 +9,7 @@ class MultiArmedBandit(object):
 
     CONTEXTS = [7,4,4,3]
 
-    def __init__(self, settings, pricepolynomial = False, **kwargs):
+    def __init__(self, settings, **kwargs):
         """
         Construct a new contextual multi-armed bandit.
         :param settings:
@@ -21,13 +21,7 @@ class MultiArmedBandit(object):
         self._colorPolicy = ThompsonSampling(arms = [len(self._settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._headerPolicy = ThompsonSampling(arms = [len(self._settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._productIdPolicy = ThompsonSampling(arms = [len(self._settings.PRODUCT_IDS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-
-        if pricepolynomial:
-            self._pricePolicy = PriceSampling(degree = 3)
-        else:
-            self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-
-        self._pricepolynomial = pricepolynomial
+        self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
 
         self._adType = 0
         self._header = 0
@@ -55,13 +49,7 @@ class MultiArmedBandit(object):
 
         indices = [self._adType, self._color, self._header, self._price, self._productId]
 
-        if self._pricepolynomial:
-            indices[3] = 1 #to prevent the converter from failing when it gets a float
-
         self._proposal = self._converter.indicesToProposal(indices)
-
-        if self._pricepolynomial:
-            self._proposal['price'] = self._price
 
         return self._proposal
 
@@ -71,6 +59,8 @@ class MultiArmedBandit(object):
         """
         success = effect['Success']
         reward = self._proposal['price'] * success
+
+        success = reward #works much better than just success
 
         self._adTypePolicy.update([self._adType], success, self._context)
         self._colorPolicy.update([self._color], success, self._context)

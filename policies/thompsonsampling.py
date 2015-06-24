@@ -17,7 +17,7 @@ class ThompsonSampling(Policy):
         """
         self.n_arms = np.array(arms)
         self.n_contexts = np.array(contexts)
-        self.d = np.sum(np.outer(self.n_contexts, self.n_arms))
+        self.d = np.sum(np.outer(self.n_contexts, self.n_arms)) + 1
 
         self.B = np.eye(self.d)
         self.Binv = np.linalg.inv(self.B)
@@ -48,17 +48,6 @@ class ThompsonSampling(Policy):
         self.f = self.f + (b * reward)
         self.mu = np.dot(self.Binv, self.f)
 
-    def createIntercept(self, context, arm):
-        contextResult = np.sum(self.n_contexts) + np.sum(self.n_arms) + 1
-        cumcontext = np.hstack((0, np.cumsum(self.n_contexts)))
-        cumarms = np.hstack((0, np.cumsum(self.n_arms)))
-        for i, c in enumerate(context):
-            contextResult[cumcontext[i] + c] = 1
-        for i, a in enumerate(arm):
-            contextResult[np.sum(self.n_arms) + cumarms[i] + a] = 1
-        contextResult[-1] = 1
-        return contextResult
-
     def createContext(self, context, arm):
         """
         :param context: the context as an array, for example: [1,2,54,3]
@@ -76,13 +65,10 @@ class ThompsonSampling(Policy):
                 contextoffset = cumsumcontext[j]
                 #print armoffset, contextoffset, i, j, a, c, "combination: ", (c, j), ",", (a, i), " : ", armoffset + contextoffset + (a*n_context[j]) + c
                 contextResult[ armoffset + contextoffset + (a*self.n_contexts[j]) + c ] = 1
-        return contextResult
+        return np.hstack((1, contextResult))
 
     def draw(self):
-        try:
-            self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
-        except np.linalg.linalg.LinAlgError:
-            self.draw()
+        self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
 
     def arms(self):
         return self.n_arms

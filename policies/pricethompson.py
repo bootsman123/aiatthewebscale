@@ -48,11 +48,7 @@ class PriceSampling(Policy):
         self.mu = np.dot(self.Binv, self.f)
 
     def draw(self):
-        try:
-            self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
-        except np.linalg.linalg.LinAlgError:
-            self.draw()
-
+        self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
 
     def name(self):
         return "Price Thompson Sampling"

@@ -1,4 +1,5 @@
 from policies.thompsonsampling import ThompsonSampling
+from policies.pricethompson import PriceSampling
 from app.converter import Converter
 
 class MultiArmedBandit(object):
@@ -8,7 +9,7 @@ class MultiArmedBandit(object):
 
     CONTEXTS = [7,4,4,3]
 
-    def __init__(self, settings, **kwargs):
+    def __init__(self, settings, pricepolynomial = False, **kwargs):
         """
         Construct a new contextual multi-armed bandit.
         :param settings:
@@ -19,8 +20,14 @@ class MultiArmedBandit(object):
         self._adTypePolicy = ThompsonSampling(arms = [len(self._settings.AD_TYPES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._colorPolicy = ThompsonSampling(arms = [len(self._settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._headerPolicy = ThompsonSampling(arms = [len(self._settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._productIdPolicy = ThompsonSampling(arms = [len(self._settings.PRODUCT_IDS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+
+        if pricepolynomial:
+            self._pricePolicy = PriceSampling(degree = 3)
+        else:
+            self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+
+        self._pricepolynomial = pricepolynomial
 
         self._adType = 0
         self._header = 0
@@ -47,7 +54,14 @@ class MultiArmedBandit(object):
         self._productId = self._productIdPolicy.choose(self._context)[0]
 
         indices = [self._adType, self._color, self._header, self._price, self._productId]
+
+        if self._pricepolynomial:
+            indices[3] = 1 #to prevent the converter from failing when it gets a float
+
         self._proposal = self._converter.indicesToProposal(indices)
+
+        if self._pricepolynomial:
+            self._proposal['price'] = self._price
 
         return self._proposal
 
@@ -56,6 +70,7 @@ class MultiArmedBandit(object):
         Updates the policies for the given effect (either success = 1 or 0).
         """
         success = effect['Success']
+        reward = self._proposal['price'] * success
 
         self._adTypePolicy.update([self._adType], success, self._context)
         self._colorPolicy.update([self._color], success, self._context)
@@ -63,42 +78,12 @@ class MultiArmedBandit(object):
         self._pricePolicy.update([self._price], success, self._context)
         self._productIdPolicy.update([self._productId], success, self._context)
 
-
-
-
-
-class MergedMultiArmedBandit(object):
-    """
-    Merged contextual multi-armed bandit.
-    """
-    ARMS = [3, 5, 3, 16]
-    CONTEXTS = [7, 4, 4, 3]
-
-    def __init__(self, settings, **kwargs):
-        self._settings = settings
-        self._converter = Converter(self._settings)
-
-        self._policy = ThompsonSampling(arms = MergedMultiArmedBandit.ARMS, contexts = MergedMultiArmedBandit.CONTEXTS)
-
-        self._adType = 0
-        self._color = 0
-        self._header = 0
-        self._productId = 0
-
-        self._context = []
-
-    def propose(self, context, price = None):
-        self._context = context
-
-        # @TODO: Why this order?
-        self._adType, self._color, self._header, self._productId = self._policy.choose(self._context)
-
-        indices = [self._adType, self._color, self._header, price, self._productId]
-        proposal = self._converter.indicesToProposal(indices)
-        proposal['price'] = price
-
-        return proposal
-
-    def update(self, effect):
-        success = effect['Success']
-        self._policy.update((self._adType, self._color, self._header, self._productId), success, self._context)
+    def draw(self):
+        """
+        makes a draw for every policy. can be used for a multithreading approach, doing this while crawling the web
+        """
+        self._adTypePolicy.draw()
+        self._colorPolicy.draw()
+        self._headerPolicy.draw()
+        self._pricePolicy.draw()
+        self._productIdPolicy.draw()

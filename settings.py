@@ -37,8 +37,8 @@ CONTEXT_INDEX_TO_VALUE = collections.OrderedDict([('Age', lambda index : AGES[in
 AD_TYPES = ['skyscraper', 'square', 'banner']
 COLORS = ['green', 'blue', 'red', 'black', 'white']
 HEADERS = ['5', '15', '35']
-PRODUCT_IDS = list(range(10, 26, 1))
 PRICES = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+PRODUCT_IDS = list(range(10, 26, 1))
 PROPOSAL = collections.OrderedDict([('adtype', AD_TYPES), ('color', COLORS), ('header', HEADERS), ('price', PRICES), ('productid', PRODUCT_IDS)])
 PROPOSAL_VALUE_TO_INDEX = collections.OrderedDict([('adtype', lambda value : AD_TYPES.index(value)),
                                                    ('color', lambda value : COLORS.index(value)),

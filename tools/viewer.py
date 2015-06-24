@@ -11,7 +11,7 @@ import settings
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
-contextNames = ['Agent', 'Language', 'Referer'] #settings.CONTEXT.keys()
+contextNames = ['Agent', 'Language', 'Referer']
 proposalNames = settings.PROPOSAL.keys()
 
 for index, (contextName, proposalName) in enumerate(itertools.product(contextNames, proposalNames)):

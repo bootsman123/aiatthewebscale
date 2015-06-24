@@ -21,7 +21,7 @@ class Converter(object):
 
         for key, _ in mappings.items():
             # Lookup the index of the value of the values in the map.
-            index = mappings[key][0](values[key])
+            index = mappings[key](values[key])
 
             indices = np.hstack((indices, index))
 
@@ -38,7 +38,7 @@ class Converter(object):
 
         i = 0
         for key, _ in mappings.items():
-            values[key] = mappings[key][1](indices[i])
+            values[key] = mappings[key](indices[i])
 
             i = i + 1
 
@@ -50,7 +50,7 @@ class Converter(object):
         :param proposal:
         :return:
         """
-        return self.__valuesToIndices(self._settings.PROPOSAL, proposal)
+        return self.__valuesToIndices(self._settings.PROPOSAL_VALUE_TO_INDEX, proposal)
 
     def indicesToProposal(self, indices):
         """
@@ -58,7 +58,7 @@ class Converter(object):
         :param indices:
         :return:
         """
-        return self.__indicesToValues(self._settings.PROPOSAL, indices)
+        return self.__indicesToValues(self._settings.PROPOSAL_INDEX_TO_VALUE, indices)
 
     def contextToIndices(self, context):
         """
@@ -66,7 +66,7 @@ class Converter(object):
         :param context:
         :return:
         """
-        return self.__valuesToIndices(self._settings.CONTEXT, context)
+        return self.__valuesToIndices(self._settings.CONTEXT_VALUE_TO_INDEX, context)
 
     def indicesToContext(self, indices):
         """
@@ -74,7 +74,7 @@ class Converter(object):
         :param indices:
         :return:
         """
-        return self.__indicesToValues(self._settings.CONTEXT, indices)
+        return self.__indicesToValues(self._settings.CONTEXT_INDEX_TO_VALUE, indices)
 
     def contextToDummies(self, context):
         """

@@ -23,17 +23,30 @@ AGES = [0, 9, 18, 30, 50, 65, 111, 999] # http://www.pewinternet.org/data-trend/
 AGENTS = ['OSX', 'Windows', 'Linux', 'mobile']
 LANGUAGES = ['EN', 'NL', 'GE', 'NA']
 REFERERS = ['Google', 'Bing', 'NA']
-CONTEXT = collections.OrderedDict([('Age', (lambda value : np.digitize([value], AGES)[0] - 1, lambda index : AGES[index])),
-                                   ('Agent', (lambda value : AGENTS.index(value), lambda index : AGENTS[index])),
-                                   ('Language', (lambda value : LANGUAGES.index(value), lambda index : LANGUAGES[index])),
-                                   ('Referer', (lambda value : REFERERS.index(value), lambda index : REFERERS[index]))])
+CONTEXT = collections.OrderedDict([('Age', AGES), ('Agent', AGENTS), ('Language', LANGUAGES), ('Referer', REFERERS)])
+CONTEXT_VALUE_TO_INDEX = collections.OrderedDict([('Age', lambda value : np.digitize([value], AGES)[0] - 1),
+                                                  ('Agent', lambda value : AGENTS.index(value)),
+                                                  ('Language', lambda value : LANGUAGES.index(value)),
+                                                  ('Referer', lambda value : REFERERS.index(value))])
+CONTEXT_INDEX_TO_VALUE = collections.OrderedDict([('Age', lambda index : AGES[index]),
+                                                  ('Agent', lambda index : AGENTS[index]),
+                                                  ('Language', lambda index : LANGUAGES[index]),
+                                                  ('Referer', lambda index : REFERERS[index])])
 
 # Proposal values.
 AD_TYPES = ['skyscraper', 'square', 'banner']
 COLORS = ['green', 'blue', 'red', 'black', 'white']
 HEADERS = ['5', '15', '35']
 PRODUCT_IDS = list(range(10, 26, 1))
-PROPOSAL = collections.OrderedDict([('adtype', (lambda value : AD_TYPES.index(value), lambda index : AD_TYPES[index])),
-                                    ('color', (lambda value : COLORS.index(value), lambda index : COLORS[index])),
-                                    ('header', (lambda value : HEADERS.index(value), lambda index : HEADERS[index])),
-                                    ('productid', (lambda value : PRODUCT_IDS.index(value), lambda index : PRODUCT_IDS[index]))])
+PRICES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+PROPOSAL = collections.OrderedDict([('adtype', AD_TYPES), ('color', COLORS), ('header', HEADERS), ('price', PRICES), ('productid', PRODUCT_IDS)])
+PROPOSAL_VALUE_TO_INDEX = collections.OrderedDict([('adtype', lambda value : AD_TYPES.index(value)),
+                                                   ('color', lambda value : COLORS.index(value)),
+                                                   ('header', lambda value : HEADERS.index(value)),
+                                                   ('price', lambda value : np.digitize([value], PRICES)[0] - 1),
+                                                   ('productid', lambda value : PRODUCT_IDS.index(value))])
+PROPOSAL_INDEX_TO_VALUE = collections.OrderedDict([('adtype', lambda index : AD_TYPES[index]),
+                                                   ('color', lambda index : COLORS[index]),
+                                                   ('header', lambda index : HEADERS[index]),
+                                                   ('price', lambda index : PRICES[index]),
+                                                   ('productid', lambda index : PRODUCT_IDS[index])])

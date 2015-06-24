@@ -30,7 +30,7 @@ if policy.contexts()[0] > 0:
 
         plt.subplot(policy.contexts()[0], 1, nContext + 1)
         plt.title('Context {0}'.format(nContext))
-        plt.hist(arms[contextIndices], bins=np.arange(policy.numberOfArms() + 1), histtype='stepfilled', color=colors[nContext])
+        plt.hist(arms[contextIndices], bins=np.arange(policy.arms() + 1), histtype='stepfilled', color=colors[nContext])
 else:
     plt.hist(arms, bins=np.arange(policy.numberOfArms() + 1))
 plt.show()

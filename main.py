@@ -20,12 +20,17 @@ logger = logging.getLogger(__name__)
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
-#converter = Converter(settings)
-#context = collections.OrderedDict([('Age', 10.0), ('Agent', 'OSX'), ('ID', 2576), ('Language', 'EN'), ('Referer', 'NA')])
+'''
+import collections
+converter = Converter(settings)
+context = collections.OrderedDict([('Age', 10.0), ('Agent', 'OSX'), ('ID', 2576), ('Language', 'EN'), ('Referer', 'NA')])
 
-#indices = converter.contextToIndices(context)
-#print(indices)
-#print(converter.indicesToContext(indices))
+indices = converter.contextToIndices(context)
+print(indices)
+print(converter.indicesToContext(indices))
+
+exit(-1)
+'''
 
 crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings)

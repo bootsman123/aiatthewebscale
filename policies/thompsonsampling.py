@@ -1,7 +1,6 @@
 from policies.policy import Policy
 
 import numpy as np
-import numpy.random as random
 from itertools import product
 		
 class ThompsonSampling(Policy):
@@ -26,7 +25,14 @@ class ThompsonSampling(Policy):
         self.v = 1 #R * sqrt((24.0/epsilon) * self.d * log(1.0/delta))
 
     def choose(self, context = []):
-        muc = random.multivariate_normal(self.mu, self.v**2.0 * self.Binv)
+        muc = np.random.multivariate_normal(self.mu, self.v**2.0 * self.Binv)
+
+        '''
+        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+        norm = np.random.normal(size=self.mu.shape)
+        muc = self.mu + np.dot(L, norm)
+        '''
+
         rewards = np.zeros(self.n_arms)
 
         for i, arm in enumerate(product(*[range(arm) for arm in self.n_arms])):

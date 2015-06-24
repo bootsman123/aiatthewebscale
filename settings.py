@@ -27,6 +27,6 @@ CONTEXT = collections.OrderedDict([('Age', AGE), ('Agent', AGENTS), ('Language',
 # Proposal values.
 AD_TYPES = ['skyscraper', 'square', 'banner']
 COLORS = ['green', 'blue', 'red', 'black', 'white']
-HEADERS = [5, 15, 35]
+HEADERS = ['5', '15', '35']
 PRODUCT_IDS = range(10, 26, 1)
 PROPOSAL = collections.OrderedDict([('adtype', AD_TYPES), ('color', COLORS), ('header', HEADERS), ('productid', PRODUCT_IDS)])

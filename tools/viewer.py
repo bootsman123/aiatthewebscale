@@ -11,48 +11,79 @@ import settings
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
-contextNames = settings.CONTEXT.keys()
+contextNames = ['Agent', 'Language', 'Referer'] #settings.CONTEXT.keys()
 proposalNames = settings.PROPOSAL.keys()
 
-pipeline = [
-    {
-        '$group':
+for index, (contextName, proposalName) in enumerate(itertools.product(contextNames, proposalNames)):
+    pipeline = [
         {
-            '_id':
+            '$group':
             {
-                'context': '$context.Agent',
-                'proposal': '$proposal.header'
-            },
-            'success': {'$sum': {'$cond': [{'$eq': ["$effect.Success", 1]}, 1, 0]}},
-            'failure': {'$sum': {'$cond': [{'$eq': ["$effect.Success", 0]}, 1, 0]}},
-            'total': {'$sum': 1}
-        }
-    },
-    {
-        '$sort':
+                '_id':
+                {
+                    'context': '$context.{0}'.format(contextName),
+                    'proposal': '$proposal.{0}'.format(proposalName)
+                },
+                'success': {'$sum': {'$cond': [{'$eq': ["$effect.Success", 1]}, 1, 0]}},
+                'failure': {'$sum': {'$cond': [{'$eq': ["$effect.Success", 0]}, 1, 0]}},
+                'total': {'$sum': 1}
+            }
+        },
         {
-            '_id.context': -1,
-            '_id.proposal': -1
+            '$sort':
+            {
+                '_id.context': -1,
+                '_id.proposal': -1
+            }
         }
-    }
-]
-cursor = db['events'].aggregate(pipeline)
+    ]
+    cursor = database['events'].aggregate(pipeline)
 
-nContext = 4
-contextLabels = ('mobile', 'Linux', 'OSX', 'Windows')
+    # Get data from database.
+    nContext = len(settings.CONTEXT[contextName])
+    nProposal = len(settings.PROPOSAL[proposalName])
+    data = np.zeros((nContext, nProposal))
 
-nProposal = 3
-proposalLabels = headers
+    for document in cursor:
+        context = settings.CONTEXT[contextName]
+        proposal = settings.PROPOSAL[proposalName]
 
-data = np.zeros((nContext, nProposal))
+        contextIndex = context.index(document['_id']['context'])
+        proposalIndex = proposal.index(document['_id']['proposal'])
+        value = document['success'] / document['total']
 
-# Iterate over cursor.
+        data[contextIndex, proposalIndex] = value
 
+    # Plot graph.
+    axes = plt.subplot(len(contextNames), len(proposalNames), index + 1)
 
+    # Set labels for columns and rows.
+    if index < len(proposalNames):
+        axes.set_title(proposalName, size = 'large')
 
-fig, ax = plt.subplots()
+    if index % len(proposalNames) == 0:
+        axes.set_ylabel(contextName, size = 'large')
 
-for index in itertools.product(range(nContext), range(nProposal)):
+    # Set individual cell values.
+    if proposalName is not 'productid':
+        for x in range(nContext):
+            for y in range(nProposal):
+                plt.text(y + 0.5, x + 0.5, '%.4f' % data[x, y],
+                     horizontalalignment='center',
+                     verticalalignment='center',
+                )
+
+    heatmap = axes.pcolor(data, cmap=plt.cm.Blues)
+
+    axes.set_xticks(np.arange(data.shape[1]) + 0.5, minor = False)
+    axes.set_yticks(np.arange(data.shape[0]) + 0.5, minor = False)
+
+    axes.set_xticklabels(settings.PROPOSAL[proposalName], minor = False)
+    axes.set_yticklabels(settings.CONTEXT[contextName], minor = False)
+
+plt.show()
+
+'''
     element = cursor.next()
     data[index[0], index[1]] = element['success'] / element['total']
 
@@ -71,6 +102,8 @@ ax.set_yticklabels(contextLabels, minor = False)
 
 plt.colorbar(heatmap)
 plt.show()
+'''
+
 
 
 

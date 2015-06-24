@@ -15,9 +15,6 @@ logging.basicConfig(level=settings.LOG_LEVEL)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-# Crawl pages for a given runId and interaction.
-runId = 1 #random.randint(1, 1e4)
-
 # Connect to database.
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
@@ -33,10 +30,11 @@ multiarmedbandit = MultiArmedBandit(settings)
 
 price = 1
 reward = 0
-rewards = []
 
-totalI = 200 #100001
-for i in range(1, totalI + 1):
+runId = 10
+
+#for runId in range(10001, 10100 + 1):
+for i in range(1, 5 + 1): # 100000 + 1
     logger.info('At interaction {i} for runId {runId}'.format(i = i, runId = runId))
 
     # Retrieve context.
@@ -52,7 +50,6 @@ for i in range(1, totalI + 1):
     multiarmedbandit.update(effect['effect'])
 
     # Update statistics.
-    reward = reward + effect['effect']['Success']
+    reward = reward + effect['effect']['Success'] * price
 
-logger.info('Total interactions: {0}'.format(totalI))
 logger.info('Total reward: {0}'.format(reward))

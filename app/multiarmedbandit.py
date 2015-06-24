@@ -5,7 +5,8 @@ class MultiArmedBandit(object):
     """
     Contextual multi-armed bandit.
     """
-    CONTEXTS = [7, 4, 4, 3]
+
+    CONTEXTS = [7,4,4,3]
 
     def __init__(self, settings, **kwargs):
         """
@@ -15,17 +16,20 @@ class MultiArmedBandit(object):
         self._settings = settings
         self._converter = Converter(self._settings)
 
-        self._adTypePolicy = ThompsonSampling(arms = [3], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._colorPolicy = ThompsonSampling(arms = [5], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._headerPolicy = ThompsonSampling(arms = [3], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._productIdPolicy = ThompsonSampling(arms = [16], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._adTypePolicy = ThompsonSampling(arms = [len(self.settings.AD_TYPES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._colorPolicy = ThompsonSampling(arms = [len(self.settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._headerPolicy = ThompsonSampling(arms = [len(self.settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._productIdPolicy = ThompsonSampling(arms = [len(self.settings.PRODUCT_IDS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._pricePolicy = ThompsonSampling(arms = [len(self.settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
 
         self._adType = 0
         self._header = 0
         self._color = 0
         self._productId = 0
+        self._price = 0
 
         self._context = []
+        self._proposal = []
 
     def propose(self, context, price = 0.0):
         """
@@ -40,12 +44,12 @@ class MultiArmedBandit(object):
         self._color = self._colorPolicy.choose(self._context)[0]
         self._header = self._headerPolicy.choose(self._context)[0]
         self._productId = self._productIdPolicy.choose(self._context)[0]
+        self._price = self._pricePolicy.choose(self._context)[0]
 
-        indices = [self._adType, self._color, self._header, price, self._productId]
-        proposal = self._converter.indicesToProposal(indices)
-        proposal['price'] = price
+        indices = [self._adType, self._color, self._header, price, self._productId, self._price]
+        self._proposal = self._converter.indicesToProposal(indices)
 
-        return proposal
+        return self._proposal
 
     def update(self, effect):
         """
@@ -57,6 +61,7 @@ class MultiArmedBandit(object):
         self._colorPolicy.update([self._color], success, self._context)
         self._headerPolicy.update([self._header], success, self._context)
         self._productIdPolicy.update([self._productId], success, self._context)
+        self._pricePolicy.update([self._price], success, self._context)
 
 
 

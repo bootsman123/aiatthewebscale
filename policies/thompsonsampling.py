@@ -63,9 +63,8 @@ class ThompsonSampling(Policy):
             print "Found invalid matrix, B^-1 contained nan!"
             self.B = self.B - np.outer(b,b)
             return
-        else:
-            self.Binv = tempBinv
 
+        self.Binv = tempBinv
         self.f = self.f + (b * reward)
         self.mu = np.dot(self.Binv, self.f)
 

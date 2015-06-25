@@ -36,10 +36,10 @@ class ThompsonSampling(Policy):
         self.muc = None
 
     def choose(self, context = []):
-        #if self.muc is None:
-        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
-        norm = np.random.normal(size=self.d)
-        self.muc = self.mu + np.dot(L, norm)
+        if self.muc is None:
+            L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+            norm = np.random.normal(size=self.d)
+            self.muc = self.mu + np.dot(L, norm)
 
         rewards = np.zeros(self.n_arms)
 
@@ -47,7 +47,7 @@ class ThompsonSampling(Policy):
             b = self.createContext(context, arm)
             rewards[arm] = np.dot(b, self.muc)
 
-        #self.muc = None
+        self.muc = None
         return np.unravel_index(np.argmax(rewards), self.n_arms)
 		
     def update(self, arm, reward, context = []):
@@ -90,12 +90,12 @@ class ThompsonSampling(Policy):
                 contextResult[ armoffset + contextoffset + (a*self.n_contexts[j]) + c ] = 1
         return np.hstack((self.createIntercept(context, arm), contextResult))
 
-    '''
+
     def draw(self):
         L = np.linalg.cholesky(self.v**2.0 * self.Binv)
         norm = np.random.normal(size=self.d)
         self.muc = self.mu + np.dot(L, norm)
-    '''
+
 
     def arms(self):
         return self.n_arms

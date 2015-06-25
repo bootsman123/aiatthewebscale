@@ -1,6 +1,7 @@
 from policies.thompsonsampling import ThompsonSampling
 from policies.pricethompson import PriceSampling
 from app.converter import Converter
+import pymongo
 
 class MultiArmedBandit(object):
     """
@@ -8,6 +9,7 @@ class MultiArmedBandit(object):
     """
 
     CONTEXTS = [7,4,4,3]
+    FILE_NAME = 'multiarmedbandit.clf'
 
     def __init__(self, settings, **kwargs):
         """
@@ -15,8 +17,14 @@ class MultiArmedBandit(object):
         :param settings:
         """
         self._settings = settings
+
+        # Connect to database.
+        self._client = pymongo.MongoClient(self._settings.DB_HOST, self._settings.DB_PORT)
+        self._database = self._client[self._settings.DB_NAME]
+
         self._converter = Converter(self._settings)
 
+        # Setup policies.
         self._adTypePolicy = ThompsonSampling(arms = [len(self._settings.AD_TYPES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._colorPolicy = ThompsonSampling(arms = [len(self._settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._headerPolicy = ThompsonSampling(arms = [len(self._settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
@@ -63,14 +71,11 @@ class MultiArmedBandit(object):
         success = effect['Success']
         reward = self._proposal['price'] * success
 
-        success = reward #works much better than just success
-
-        self._adTypePolicy.update([self._adType], success, self._context)
-        self._colorPolicy.update([self._color], success, self._context)
-        self._headerPolicy.update([self._header], success, self._context)
-        self._pricePolicy.update([self._price], success, self._context)
-        self._productIdPolicy.update([self._productId], success, self._context)
-
+        self._adTypePolicy.update([self._adType], reward, self._context)
+        self._colorPolicy.update([self._color], reward, self._context)
+        self._headerPolicy.update([self._header], reward, self._context)
+        self._pricePolicy.update([self._price], reward, self._context)
+        self._productIdPolicy.update([self._productId], reward, self._context)
 
     def draw(self):
         """
@@ -82,7 +87,30 @@ class MultiArmedBandit(object):
         self._pricePolicy.draw()
         self._productIdPolicy.draw()
 
-import cPickle as pickle
+    def save(self):
+        self.save(MultiArmedBandit.FILE_NAME)
+
+    def save(self, fileName):
+        import dill
+
+        with open(fileName, 'wb') as file:
+            dill.dump(self, file)
+
+    @staticmethod
+    def load():
+        return MultiArmedBandit.load(MultiArmedBandit.FILE_NAME)
+
+    @staticmethod
+    def load(fileName):
+        import dill
+
+        with open(fileName, 'rb') as file:
+            return dill.load(file)
+
+try:
+   import cPickle as pickle
+except:
+   import pickle
 
 '''These two functions pickle and unpickle a MAB, so that you can save the thompson sampling parameters for another run
 for example, doing a single runID in multiple run.

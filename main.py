@@ -11,6 +11,7 @@ Questions:
 
 import logging
 import timeit
+import time
 
 import pymongo
 import numpy as np
@@ -27,29 +28,22 @@ logging.basicConfig(level=settings.LOG_LEVEL)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-# Connect to database.
-client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
-database = client['aiatthewebscale']
-
 # Setup apps.
 crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings)
 
 # Range values.
-minRunId = 2350 # 10001
-maxRunId = 2353 # 10100
-
-minI = 1
-maxI = 10000 # 100000
+runIdList = [4522, 8940] + list(range(10001, 10100, 1))
+iList = list(range(1, 100001, 1))
 
 # Statistics.
-rewards = np.zeros((maxRunId - minRunId + 1, maxI - minI + 1))
+rewards = np.zeros((len(runIdList), len(iList)))
 
 # Timing.
 startTime = timeit.default_timer()
 
-for runId in range(minRunId, maxRunId + 1, 1):
-    for i in range(minI, maxI + 1):
+for runIdIdx, runId in enumerate(runIdList):
+    for iIdx, i in enumerate(iList):
         logger.info('At interaction {i} for runId {runId}'.format(i = i, runId = runId))
 
         # Retrieve context.
@@ -65,16 +59,16 @@ for runId in range(minRunId, maxRunId + 1, 1):
         multiarmedbandit.update(effect['effect'])
 
         # Update statistics.
-        rewards[runId - minRunId, i - minI] = effect['effect']['Success'] * proposal['price']
+        rewards[runIdIdx, iIdx] = effect['effect']['Success'] * proposal['price']
 
 # End timing.
 elapsedTime = timeit.default_timer() - startTime
+logger.info('Total computation time: {}'.format(time.strftime('%H:%M:%S', time.gmtime(elapsedTime))))
 
 # Output statistics.
-logger.info('Total computation time: {0} s'.format(elapsedTime))
-logger.info('Total reward: {0}'.format(np.sum(rewards)))
-logger.info('Total mean reward over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.sum(np.mean(rewards, axis = 1))))
-logger.info('Mean reward per run over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.mean(rewards, axis = 1)))
+logger.info('Total reward: {}'.format(np.sum(rewards)))
+logger.info('Total mean reward over {0} runs: {1}'.format(len(runIdList), np.sum(np.mean(rewards, axis = 1))))
+logger.info('Mean reward per run over {0} runs: {1}'.format(len(runIdList), np.mean(rewards, axis = 1)))
 
 # Plot statistics.
 plt.plot(np.cumsum(rewards.T, axis = 0))

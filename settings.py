@@ -9,6 +9,7 @@ TEAM_PASS = 'bb7419a64fa2b8b0aa4e9ba999f13f93'
 # Datebase.
 DB_HOST = 'localhost'
 DB_PORT = 27017
+DB_NAME = ''
 
 # Logging.
 LOG_LEVEL = logging.INFO
@@ -23,6 +24,9 @@ AGES = [0, 9, 18, 30, 50, 65, 111, 999] # http://www.pewinternet.org/data-trend/
 AGENTS = ['OSX', 'Windows', 'Linux', 'mobile']
 LANGUAGES = ['EN', 'NL', 'GE', 'NA']
 REFERERS = ['Google', 'Bing', 'NA']
+USER_BOUGHTS = [0, 1, 2] # 0 = unknown, 1 = never, 2 = at least once
+USER_MINIMUM_PRICES = [0, 5, 10, 15, 20, 35, 50] # 0 = unknown
+USER_MAXIMUM_PRICES = [0, 5, 10, 15, 20, 35, 50] # 0 = unknown
 CONTEXT = collections.OrderedDict([('Age', AGES), ('Agent', AGENTS), ('Language', LANGUAGES), ('Referer', REFERERS)])
 CONTEXT_VALUE_TO_INDEX = collections.OrderedDict([('Age', lambda value : np.digitize([value], AGES)[0] - 1),
                                                   ('Agent', lambda value : AGENTS.index(value)),

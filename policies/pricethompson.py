@@ -26,7 +26,9 @@ class PriceSampling(Policy):
     def choose(self, context = []):
 
         if self.muc is None:
-            self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
+            L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+            norm = np.random.normal(size=self.d)
+            self.muc = self.mu + np.dot(L, norm)
 
         rewardpoly = np.poly1d(self.muc)
         deriv = np.polyder(self.muc)
@@ -43,12 +45,22 @@ class PriceSampling(Policy):
         b = np.array([arm[0]**float(x) for x in range(self.d -1, -1, -1)])
 
         self.B = self.B + np.outer(b, b)
-        self.Binv = np.linalg.inv(self.B)
+        tempBinv = np.linalg.inv(self.B)
+
+        x = np.sum(tempBinv)
+        if np.isnan(x):
+            print "Found invalid matrix, B^-1 contained nan!"
+            self.B = self.B - np.outer(b,b)
+            return
+
+        self.Binv = tempBinv
         self.f = self.f + (b * reward)
         self.mu = np.dot(self.Binv, self.f)
 
     def draw(self):
-        self.muc = mv.rvs(self.mu, self.v**2.0 * self.Binv)
+        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+        norm = np.random.normal(size=self.d)
+        self.muc = self.mu + np.dot(L, norm)
 
     def name(self):
         return "Price Thompson Sampling"

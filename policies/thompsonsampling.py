@@ -30,14 +30,18 @@ class ThompsonSampling(Policy):
         self._cumsumcontext = [ np.hstack((0, np.cumsum(np.outer(self.n_arms, self.n_contexts)[i,:]))) for i in range(len(self.n_arms)) ]
         self._cumcontext = np.hstack((0, np.cumsum(self.n_contexts)))
         self._cumarms = np.hstack((0, np.cumsum(self.n_arms)))
+        self.done = np.sum(np.outer(self.n_arms, self.n_contexts))
+        self.dtwo = np.sum(self.n_contexts) + np.sum(self.n_arms) + 1
+
 
         self.muc = None
 
     def choose(self, context = []):
-        #if self.muc is None:
-        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
-        norm = np.random.normal(size=self.d)
-        self.muc = self.mu + np.dot(L, norm)
+
+        if self.muc is None:
+            L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+            norm = np.random.normal(size=self.d)
+            self.muc = self.mu + np.dot(L, norm)
 
         rewards = np.zeros(self.n_arms)
 
@@ -49,21 +53,23 @@ class ThompsonSampling(Policy):
         return np.unravel_index(np.argmax(rewards), self.n_arms)
 		
     def update(self, arm, reward, context = []):
+
         b = self.createContext(context, arm)
         self.B = self.B + np.outer(b, b)
-
         tempBinv = np.linalg.inv(self.B)
-        if np.isnan(np.sum(tempBinv)):
-            #print('Found invalid matrix, B^-1 contained nan!')
-            self.B = self.B - np.outer(b,b)
-        else:
-            self.Binv = tempBinv
 
+        x = np.sum(tempBinv)
+        if np.isnan(x):
+            print "Found invalid matrix, B^-1 contained nan!"
+            self.B = self.B - np.outer(b,b)
+            return
+
+        self.Binv = tempBinv
         self.f = self.f + (b * reward)
         self.mu = np.dot(self.Binv, self.f)
 
     def createIntercept(self, context, arm):
-        contextResult = np.zeros(np.sum(self.n_contexts) + np.sum(self.n_arms) + 1)
+        contextResult = np.zeros(self.dtwo)
         for i, c in enumerate(context):
             contextResult[self._cumcontext[i] + c] = 1
         for i, a in enumerate(arm):
@@ -79,7 +85,7 @@ class ThompsonSampling(Policy):
         :param n_arm: Maximum number of arms, for example: [3,3,5,16]
         :return: An array of ordered dummy variables, 1 if the combination of arm/context is fulfilled
         """
-        contextResult = np.zeros(np.sum(np.outer(self.n_arms, self.n_contexts)))
+        contextResult = np.zeros(self.done)
         for i, a in enumerate(arm):
             armoffset = self._cumsumarm[i]
             for j, c in enumerate(context):
@@ -87,12 +93,10 @@ class ThompsonSampling(Policy):
                 contextResult[ armoffset + contextoffset + (a*self.n_contexts[j]) + c ] = 1
         return np.hstack((self.createIntercept(context, arm), contextResult))
 
-    '''
     def draw(self):
         L = np.linalg.cholesky(self.v**2.0 * self.Binv)
         norm = np.random.normal(size=self.d)
         self.muc = self.mu + np.dot(L, norm)
-    '''
 
     def arms(self):
         return self.n_arms

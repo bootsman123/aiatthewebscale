@@ -49,7 +49,7 @@ class PriceSampling(Policy):
 
         x = np.sum(tempBinv)
         if np.isnan(x):
-            print "Found invalid matrix, B^-1 contained nan!"
+            #print("Found invalid matrix, B^-1 contained nan!")
             self.B = self.B - np.outer(b,b)
             return
 

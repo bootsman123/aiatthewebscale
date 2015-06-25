@@ -9,7 +9,7 @@ TEAM_PASS = 'bb7419a64fa2b8b0aa4e9ba999f13f93'
 # Datebase.
 DB_HOST = 'localhost'
 DB_PORT = 27017
-DB_NAME = ''
+DB_NAME = 'aiatthewebscale'
 
 # Logging.
 LOG_LEVEL = logging.INFO

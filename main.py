@@ -32,6 +32,10 @@ logger = logging.getLogger(__name__)
 crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings)
 
+# Connect to database.
+client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
+database = client[settings.DB_NAME]
+
 # Range values.
 runIdList = [4522, 8940] + list(range(10001, 10100, 1))
 iList = list(range(1, 100001, 1))

@@ -40,6 +40,7 @@ class ThompsonSampling(Policy):
             L = np.linalg.cholesky(self.v**2.0 * self.Binv)
             norm = np.random.normal(size=self.d)
             self.muc = self.mu + np.dot(L, norm)
+            # self.draw() ?
 
         rewards = np.zeros(self.n_arms)
 

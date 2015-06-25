@@ -7,7 +7,6 @@ class MultiArmedBandit(object):
     """
     Contextual multi-armed bandit.
     """
-
     CONTEXTS = [7,4,4,3]
     FILE_NAME = 'multiarmedbandit.clf'
 
@@ -17,11 +16,6 @@ class MultiArmedBandit(object):
         :param settings:
         """
         self._settings = settings
-
-        # Connect to database.
-        self._client = pymongo.MongoClient(self._settings.DB_HOST, self._settings.DB_PORT)
-        self._database = self._client[self._settings.DB_NAME]
-
         self._converter = Converter(self._settings)
 
         # Setup policies.
@@ -87,21 +81,14 @@ class MultiArmedBandit(object):
         self._pricePolicy.draw()
         self._productIdPolicy.draw()
 
-    def save(self):
-        self.save(MultiArmedBandit.FILE_NAME)
-
-    def save(self, fileName):
+    def save(self, fileName = FILE_NAME):
         import dill
 
         with open(fileName, 'wb') as file:
             dill.dump(self, file)
 
     @staticmethod
-    def load():
-        return MultiArmedBandit.load(MultiArmedBandit.FILE_NAME)
-
-    @staticmethod
-    def load(fileName):
+    def load(fileName = FILE_NAME):
         import dill
 
         with open(fileName, 'rb') as file:
@@ -116,7 +103,7 @@ except:
 for example, doing a single runID in multiple run.
 The settings can't be saved since they are a module, but they are reassigned during the unpickle, which means nothing should happen,
 as long as the settings module remains unchanged.
-'''
+
 def pickleMAB(mab, filename):
     mab._settings = None
     mab._converter = None
@@ -131,3 +118,4 @@ def unpickleMAB(filename, settings):
     mab._settings = settings
     mab._converter = Converter(settings)
     return mab
+'''

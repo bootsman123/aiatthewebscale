@@ -1,10 +1,21 @@
+'''
+For multiarmedbandit.py, extend context (use database):
+- average price until now + additional class for unseen users
+- minimum price until now
+- maximum price until now
+- how often has the user purchased something
+
+Questions:
+- Is this per run or for all runs together?
+'''
+
 import logging
 import timeit
 
 import pymongo
 import numpy as np
+import matplotlib.pyplot as plt
 
-from app.converter import Converter
 from app.crawler import Crawler
 from app.multiarmedbandit import MultiArmedBandit
 
@@ -20,32 +31,21 @@ logger = logging.getLogger(__name__)
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
-'''
-import collections
-converter = Converter(settings)
-context = collections.OrderedDict([('Age', 10.0), ('Agent', 'OSX'), ('ID', 2576), ('Language', 'EN'), ('Referer', 'NA')])
-
-indices = converter.contextToIndices(context)
-print(indices)
-print(converter.indicesToContext(indices))
-
-exit(-1)
-'''
-
+# Setup apps.
 crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings)
 
 # Range values.
-minRunId = 2341 # 10001
-maxRunId = 2342 # 10100
+minRunId = 2350 # 10001
+maxRunId = 2353 # 10100
 
 minI = 1
-maxI = 1000 # 100000
+maxI = 10000 # 100000
 
 # Statistics.
 rewards = np.zeros((maxRunId - minRunId + 1, maxI - minI + 1))
 
-# Timing
+# Timing.
 startTime = timeit.default_timer()
 
 for runId in range(minRunId, maxRunId + 1, 1):
@@ -67,9 +67,30 @@ for runId in range(minRunId, maxRunId + 1, 1):
         # Update statistics.
         rewards[runId - minRunId, i - minI] = effect['effect']['Success'] * proposal['price']
 
-# Compute statistics.
+# End timing.
 elapsedTime = timeit.default_timer() - startTime
 
-logger.info('Total computation time: {0}'.format(elapsedTime))
+# Output statistics.
+logger.info('Total computation time: {0} s'.format(elapsedTime))
 logger.info('Total reward: {0}'.format(np.sum(rewards)))
-logger.info('Mean reward over per run over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.mean(rewards, axis = 1)))
+logger.info('Total mean reward over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.sum(np.mean(rewards, axis = 1))))
+logger.info('Mean reward per run over {0} runs: {1}'.format(maxRunId - minRunId + 1, np.mean(rewards, axis = 1)))
+
+# Plot statistics.
+plt.plot(np.cumsum(rewards.T, axis = 0))
+plt.suptitle('Reward of all runs for policy')
+plt.ylabel('Cumulative reward')
+plt.xlabel('Number of interactions')
+plt.show()
+
+'''
+x = np.arange(0, maxI - minI + 1, 1)
+y = np.cumsum(np.mean(rewards, axis = 0))
+error = np.std(rewards, axis = 0)
+
+plt.errorbar(x, y, yerr = error)
+plt.suptitle('Error bar of mean reward for policy')
+plt.ylabel('Cumulative reward')
+plt.xlabel('Number of interactions')
+plt.show()
+'''

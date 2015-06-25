@@ -11,11 +11,54 @@ import settings
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
+pipeline = [
+    {
+        '$match':
+        {
+            'runid': 8050
+        }
+    },
+    {
+        '$group':
+        {
+            '_id':
+            {
+                        'user': '$context.ID'
+            },
+            'total': {'$sum': 1}
+        }
+    },
+    {
+            '$sort':
+            {
+                'total': 1
+            }
+    }
+]
+cursor = database['contexts'].aggregate(pipeline)
+
+data = []
+for document in cursor:
+    if document['_id']['user'] != None:
+        data.append(document['total'])
+
+plt.plot(data)
+plt.show()
+
+
+'''
+# Plot all combinations of contexts and proposals to each other.
 contextNames = ['Agent', 'Language', 'Referer']
 proposalNames = ['adtype', 'color', 'header', 'productid']
 
 for index, (contextName, proposalName) in enumerate(itertools.product(contextNames, proposalNames)):
     pipeline = [
+        {
+            '$match':
+            {
+                'runid': 7888
+            }
+        },
         {
             '$group':
             {
@@ -81,3 +124,4 @@ for index, (contextName, proposalName) in enumerate(itertools.product(contextNam
     axes.set_yticklabels(settings.CONTEXT[contextName], minor = False)
 
 plt.show()
+'''

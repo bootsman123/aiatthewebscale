@@ -31,15 +31,13 @@ class ThompsonSampling(Policy):
         self._cumcontext = np.hstack((0, np.cumsum(self.n_contexts)))
         self._cumarms = np.hstack((0, np.cumsum(self.n_arms)))
 
-
         self.muc = None
 
     def choose(self, context = []):
-
-        if self.muc is None:
-            L = np.linalg.cholesky(self.v**2.0 * self.Binv)
-            norm = np.random.normal(size=self.d)
-            self.muc = self.mu + np.dot(L, norm)
+        #if self.muc is None:
+        L = np.linalg.cholesky(self.v**2.0 * self.Binv)
+        norm = np.random.normal(size=self.d)
+        self.muc = self.mu + np.dot(L, norm)
 
         rewards = np.zeros(self.n_arms)
 
@@ -55,9 +53,8 @@ class ThompsonSampling(Policy):
         self.B = self.B + np.outer(b, b)
 
         tempBinv = np.linalg.inv(self.B)
-        x = np.sum(tempBinv)
-        if np.isnan(x):
-            print "Found invalid matrix, B^-1 contained nan!"
+        if np.isnan(np.sum(tempBinv)):
+            #print('Found invalid matrix, B^-1 contained nan!')
             self.B = self.B - np.outer(b,b)
         else:
             self.Binv = tempBinv
@@ -90,10 +87,12 @@ class ThompsonSampling(Policy):
                 contextResult[ armoffset + contextoffset + (a*self.n_contexts[j]) + c ] = 1
         return np.hstack((self.createIntercept(context, arm), contextResult))
 
+    '''
     def draw(self):
         L = np.linalg.cholesky(self.v**2.0 * self.Binv)
         norm = np.random.normal(size=self.d)
         self.muc = self.mu + np.dot(L, norm)
+    '''
 
     def arms(self):
         return self.n_arms

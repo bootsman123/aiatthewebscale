@@ -24,8 +24,8 @@ class MultiArmedBandit(object):
         self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
 
         self._adType = 0
-        self._header = 0
         self._color = 0
+        self._header = 0
         self._productId = 0
         self._price = 0
 
@@ -68,6 +68,7 @@ class MultiArmedBandit(object):
         self._pricePolicy.update([self._price], success, self._context)
         self._productIdPolicy.update([self._productId], success, self._context)
 
+    '''
     def draw(self):
         """
         makes a draw for every policy. can be used for a multithreading approach, doing this while crawling the web
@@ -77,3 +78,4 @@ class MultiArmedBandit(object):
         self._headerPolicy.draw()
         self._pricePolicy.draw()
         self._productIdPolicy.draw()
+    '''

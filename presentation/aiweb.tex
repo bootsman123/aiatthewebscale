@@ -30,15 +30,19 @@
 \begin{frame}
 	\frametitle{Model}
 	\begin{itemize}
-		\item $r = \beta_0 + \beta_1 c_1 + \ldots + \beta_k c_k + \beta_{k+1} a_1 + \ldots + \beta {k+l} a_l + \beta {k+l+1} c_1a_1 + \ldots + \beta_{x} c_ka_l$
-		\item For reward: use price*effect instead of effect
+		\item $r = \beta_0 + \beta_1 c_1 + \ldots + \beta_k c_k + \beta_{k+1} a_1 + \ldots + \beta {k+l} a_l + \beta_{x_1} c_1a_1 + \ldots + \beta_{x_m} c_ka_l$
+		\item For reward: use price $\times$ effect instead of effect
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Visualization}
-	\includegraphics[width=0.49\textwidth]{test.png}
-	\includegraphics[width=0.49\textwidth]{viewer.png}
+	\includegraphics[width=\textwidth]{test.png}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Visualization}
+	\includegraphics[width=\textwidth]{viewer.png}
 \end{frame}
 
 
@@ -47,7 +51,7 @@
 	\begin{itemize}
 		\item Price: in buckets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 		\item Multivariate Gaussian speedup: use Cholesky transformation
-		\item Userid: add extra features: average price user paid previously
+		\item Userid: add extra features: average price user paid previously, if user has bought anything previously
 	\end{itemize}
 \end{frame}
 

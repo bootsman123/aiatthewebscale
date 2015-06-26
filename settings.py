@@ -37,19 +37,19 @@ CONTEXT_VALUE_TO_INDEX = collections.OrderedDict([('Age', lambda value : np.digi
                                                   ('Agent', lambda value : AGENTS.index(value)),
                                                   ('Language', lambda value : LANGUAGES.index(value)),
                                                   ('Referer', lambda value : REFERERS.index(value)),
-                                                  #('UserAveragePrice', lambda value : np.digitize([value], USER_AVERAGE_PRICES)[0] - 1),
+                                                  ('UserAveragePrice', lambda value : np.digitize([value], USER_AVERAGE_PRICES)[0] - 1),
                                                   #('UserMinimumPrice', lambda value : np.digitize([value], USER_MINIMUM_PRICES)[0] - 1),
                                                   #('UserMaximumPrice', lambda value : np.digitize([value], USER_MAXIMUM_PRICES)[0] - 1),
-                                                  #('UserTotalPurchases', lambda value : USER_TOTAL_PURCHASES.index(value))
+                                                  ('UserTotalPurchases', lambda value : USER_TOTAL_PURCHASES.index(value))
                                                  ])
 CONTEXT_INDEX_TO_VALUE = collections.OrderedDict([('Age', lambda index : AGES[index]),
                                                   ('Agent', lambda index : AGENTS[index]),
                                                   ('Language', lambda index : LANGUAGES[index]),
                                                   ('Referer', lambda index : REFERERS[index]),
-                                                  #('UserAveragePrice', lambda index : USER_AVERAGE_PRICES[index]),
+                                                  ('UserAveragePrice', lambda index : USER_AVERAGE_PRICES[index]),
                                                   #('UserMinimumPrice', lambda index : USER_MINIMUM_PRICES[index]),
                                                   #('UserMaximumPrice', lambda index : USER_MAXIMUM_PRICES[index]),
-                                                  ##('UserTotalPurchases', lambda index : USER_TOTAL_PURCHASES[index])
+                                                  ('UserTotalPurchases', lambda index : USER_TOTAL_PURCHASES[index])
                                                   ])
 
 # Proposal values.

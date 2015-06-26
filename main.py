@@ -23,7 +23,7 @@ multiarmedbandit = MultiArmedBandit(settings)
 provider = Provider(settings)
 
 # Range values.
-#runIdList = [4522, 8940] + list(range(10001, 10100, 1))
+#runIdList = [4522, 8940] + list(range(10001, 10100, 1)) # Bas start at 10075
 #iList = list(range(1, 100001, 1))
 
 runIdList = [4522]
@@ -58,6 +58,9 @@ for runIdIdx, runId in enumerate(runIdList):
 
         # Update statistics.
         rewards[runIdIdx, iIdx] = effect['effect']['Success'] * proposal['price']
+
+    # Save multi-armed bandit.
+    multiarmedbandit.save('mab-{0}.clf'.format(runId))
 
 # End timing.
 elapsedTime = timeit.default_timer() - startTime

@@ -1,12 +1,14 @@
 from policies.thompsonsampling import ThompsonSampling
+from policies.pricethompson import PriceSampling
 from app.converter import Converter
+import pymongo
 
 class MultiArmedBandit(object):
     """
     Contextual multi-armed bandit.
     """
-
     CONTEXTS = [7,4,4,3]
+    FILE_NAME = 'multiarmedbandit.clf'
 
     def __init__(self, settings, **kwargs):
         """
@@ -16,15 +18,17 @@ class MultiArmedBandit(object):
         self._settings = settings
         self._converter = Converter(self._settings)
 
+        # Setup policies.
         self._adTypePolicy = ThompsonSampling(arms = [len(self._settings.AD_TYPES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._colorPolicy = ThompsonSampling(arms = [len(self._settings.COLORS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._headerPolicy = ThompsonSampling(arms = [len(self._settings.HEADERS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
-        self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
         self._productIdPolicy = ThompsonSampling(arms = [len(self._settings.PRODUCT_IDS)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        self._pricePolicy = ThompsonSampling(arms = [len(self._settings.PRICES)], contexts = MultiArmedBandit.CONTEXTS, **kwargs)
+        #self._pricePolicy = PriceSampling(degree = 2)
 
         self._adType = 0
-        self._header = 0
         self._color = 0
+        self._header = 0
         self._productId = 0
         self._price = 0
 
@@ -47,7 +51,10 @@ class MultiArmedBandit(object):
         self._productId = self._productIdPolicy.choose(self._context)[0]
 
         indices = [self._adType, self._color, self._header, self._price, self._productId]
+
+        #indices[3] = 1
         self._proposal = self._converter.indicesToProposal(indices)
+        #self._proposal['price'] = self._price
 
         return self._proposal
 
@@ -56,49 +63,59 @@ class MultiArmedBandit(object):
         Updates the policies for the given effect (either success = 1 or 0).
         """
         success = effect['Success']
+        reward = self._proposal['price'] * success
 
-        self._adTypePolicy.update([self._adType], success, self._context)
-        self._colorPolicy.update([self._color], success, self._context)
-        self._headerPolicy.update([self._header], success, self._context)
-        self._pricePolicy.update([self._price], success, self._context)
-        self._productIdPolicy.update([self._productId], success, self._context)
+        self._adTypePolicy.update([self._adType], reward, self._context)
+        self._colorPolicy.update([self._color], reward, self._context)
+        self._headerPolicy.update([self._header], reward, self._context)
+        self._pricePolicy.update([self._price], reward, self._context)
+        self._productIdPolicy.update([self._productId], reward, self._context)
 
+    def draw(self):
+        """
+        makes a draw for every policy. can be used for a multithreading approach, doing this while crawling the web
+        """
+        self._adTypePolicy.draw()
+        self._colorPolicy.draw()
+        self._headerPolicy.draw()
+        self._pricePolicy.draw()
+        self._productIdPolicy.draw()
 
+    def save(self, fileName = FILE_NAME):
+        import dill
 
+        with open(fileName, 'wb') as file:
+            dill.dump(self, file)
 
+    @staticmethod
+    def load(fileName = FILE_NAME):
+        import dill
 
-class MergedMultiArmedBandit(object):
-    """
-    Merged contextual multi-armed bandit.
-    """
-    ARMS = [3, 5, 3, 16]
-    CONTEXTS = [7, 4, 4, 3]
+        with open(fileName, 'rb') as file:
+            return dill.load(file)
 
-    def __init__(self, settings, **kwargs):
-        self._settings = settings
-        self._converter = Converter(self._settings)
+try:
+   import cPickle as pickle
+except:
+   import pickle
 
-        self._policy = ThompsonSampling(arms = MergedMultiArmedBandit.ARMS, contexts = MergedMultiArmedBandit.CONTEXTS)
+'''These two functions pickle and unpickle a MAB, so that you can save the thompson sampling parameters for another run
+for example, doing a single runID in multiple run.
+The settings can't be saved since they are a module, but they are reassigned during the unpickle, which means nothing should happen,
+as long as the settings module remains unchanged.
 
-        self._adType = 0
-        self._color = 0
-        self._header = 0
-        self._productId = 0
+def pickleMAB(mab, filename):
+    mab._settings = None
+    mab._converter = None
+    with open(filename, 'wb') as output:
+        pick = pickle.Pickler(output, protocol = -1)
+        pick.dump(mab)
 
-        self._context = []
-
-    def propose(self, context, price = None):
-        self._context = context
-
-        # @TODO: Why this order?
-        self._adType, self._color, self._header, self._productId = self._policy.choose(self._context)
-
-        indices = [self._adType, self._color, self._header, price, self._productId]
-        proposal = self._converter.indicesToProposal(indices)
-        proposal['price'] = price
-
-        return proposal
-
-    def update(self, effect):
-        success = effect['Success']
-        self._policy.update((self._adType, self._color, self._header, self._productId), success, self._context)
+def unpickleMAB(filename, settings):
+    with open(filename, 'rb') as input:
+        pick = pickle.Unpickler(input)
+        mab = pick.load()
+    mab._settings = settings
+    mab._converter = Converter(settings)
+    return mab
+'''

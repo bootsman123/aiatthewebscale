@@ -11,6 +11,7 @@ import settings
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
+'''
 pipeline = [
     {
         '$match':
@@ -44,9 +45,8 @@ for document in cursor:
 
 plt.plot(data)
 plt.show()
-
-
 '''
+
 # Plot all combinations of contexts and proposals to each other.
 contextNames = ['Agent', 'Language', 'Referer']
 proposalNames = ['adtype', 'color', 'header', 'productid']
@@ -124,4 +124,3 @@ for index, (contextName, proposalName) in enumerate(itertools.product(contextNam
     axes.set_yticklabels(settings.CONTEXT[contextName], minor = False)
 
 plt.show()
-'''

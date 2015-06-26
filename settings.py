@@ -6,10 +6,14 @@ import numpy as np
 TEAM_ID = 'Banditos'
 TEAM_PASS = 'bb7419a64fa2b8b0aa4e9ba999f13f93'
 
-# Datebase.
+# Database.
 DB_HOST = 'localhost'
 DB_PORT = 27017
 DB_NAME = 'aiatthewebscale'
+DB_COLLECTION = 'events'
+
+# Provider
+UNKNOWN_VALUE = 999
 
 # Logging.
 LOG_LEVEL = logging.INFO
@@ -24,18 +28,29 @@ AGES = [0, 9, 18, 30, 50, 65, 111, 999] # http://www.pewinternet.org/data-trend/
 AGENTS = ['OSX', 'Windows', 'Linux', 'mobile']
 LANGUAGES = ['EN', 'NL', 'GE', 'NA']
 REFERERS = ['Google', 'Bing', 'NA']
-USER_BOUGHTS = [0, 1, 2] # 0 = unknown, 1 = never, 2 = at least once
-USER_MINIMUM_PRICES = [0, 5, 10, 15, 20, 35, 50] # 0 = unknown
-USER_MAXIMUM_PRICES = [0, 5, 10, 15, 20, 35, 50] # 0 = unknown
+USER_AVERAGE_PRICES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, UNKNOWN_VALUE]
+#USER_MINIMUM_PRICES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, UNKNOWN_VALUE]
+#USER_MAXIMUM_PRICES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, UNKNOWN_VALUE]
+USER_TOTAL_PURCHASES = [0, 1, UNKNOWN_VALUE]
 CONTEXT = collections.OrderedDict([('Age', AGES), ('Agent', AGENTS), ('Language', LANGUAGES), ('Referer', REFERERS)])
 CONTEXT_VALUE_TO_INDEX = collections.OrderedDict([('Age', lambda value : np.digitize([value], AGES)[0] - 1),
                                                   ('Agent', lambda value : AGENTS.index(value)),
                                                   ('Language', lambda value : LANGUAGES.index(value)),
-                                                  ('Referer', lambda value : REFERERS.index(value))])
+                                                  ('Referer', lambda value : REFERERS.index(value)),
+                                                  #('UserAveragePrice', lambda value : np.digitize([value], USER_AVERAGE_PRICES)[0] - 1),
+                                                  #('UserMinimumPrice', lambda value : np.digitize([value], USER_MINIMUM_PRICES)[0] - 1),
+                                                  #('UserMaximumPrice', lambda value : np.digitize([value], USER_MAXIMUM_PRICES)[0] - 1),
+                                                  #('UserTotalPurchases', lambda value : USER_TOTAL_PURCHASES.index(value))
+                                                 ])
 CONTEXT_INDEX_TO_VALUE = collections.OrderedDict([('Age', lambda index : AGES[index]),
                                                   ('Agent', lambda index : AGENTS[index]),
                                                   ('Language', lambda index : LANGUAGES[index]),
-                                                  ('Referer', lambda index : REFERERS[index])])
+                                                  ('Referer', lambda index : REFERERS[index]),
+                                                  #('UserAveragePrice', lambda index : USER_AVERAGE_PRICES[index]),
+                                                  #('UserMinimumPrice', lambda index : USER_MINIMUM_PRICES[index]),
+                                                  #('UserMaximumPrice', lambda index : USER_MAXIMUM_PRICES[index]),
+                                                  ##('UserTotalPurchases', lambda index : USER_TOTAL_PURCHASES[index])
+                                                  ])
 
 # Proposal values.
 AD_TYPES = ['skyscraper', 'square', 'banner']

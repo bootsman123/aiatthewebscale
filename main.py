@@ -1,24 +1,13 @@
-'''
-For multiarmedbandit.py, extend context (use database):
-- average price until now + additional class for unseen users
-- minimum price until now
-- maximum price until now
-- how often has the user purchased something
-
-Questions:
-- Is this per run or for all runs together?
-'''
-
 import logging
 import timeit
 import time
 
-import pymongo
 import numpy as np
 import matplotlib.pyplot as plt
 
 from app.crawler import Crawler
 from app.multiarmedbandit import MultiArmedBandit
+from app.provider import Provider
 
 # Load settings.
 import settings
@@ -31,14 +20,14 @@ logger = logging.getLogger(__name__)
 # Setup apps.
 crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings)
-
-# Connect to database.
-client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
-database = client[settings.DB_NAME]
+provider = Provider(settings)
 
 # Range values.
-runIdList = [4522, 8940] + list(range(10001, 10100, 1))
-iList = list(range(1, 100001, 1))
+#runIdList = [4522, 8940] + list(range(10001, 10100, 1))
+#iList = list(range(1, 100001, 1))
+
+runIdList = [4522]
+iList = list(range(1, 3000))
 
 # Statistics.
 rewards = np.zeros((len(runIdList), len(iList)))
@@ -50,8 +39,10 @@ for runIdIdx, runId in enumerate(runIdList):
     for iIdx, i in enumerate(iList):
         logger.info('At interaction {i} for runId {runId}'.format(i = i, runId = runId))
 
-        # Retrieve context.
+        # Retrieve and update context with user information.
         context = crawler.get(runId, i)
+        userContext = provider.get(context['context'])
+        context['context'].update(userContext)
 
         # Generate a proposal.
         proposal = multiarmedbandit.propose(context['context'])
@@ -61,6 +52,9 @@ for runIdIdx, runId in enumerate(runIdList):
 
         # Update policies.
         multiarmedbandit.update(effect['effect'])
+
+        # Update database.
+        provider.put(runId, i, context, proposal, effect)
 
         # Update statistics.
         rewards[runIdIdx, iIdx] = effect['effect']['Success'] * proposal['price']
@@ -72,6 +66,7 @@ logger.info('Total computation time: {}'.format(time.strftime('%H:%M:%S', time.g
 # Output statistics.
 logger.info('Total reward: {}'.format(np.sum(rewards)))
 logger.info('Total mean reward over {0} runs: {1}'.format(len(runIdList), np.sum(np.mean(rewards, axis = 1))))
+logger.info('Total standard deviation over {0} runs: {1}'.format(len(runIdList), np.std(rewards)))
 logger.info('Mean reward per run over {0} runs: {1}'.format(len(runIdList), np.mean(rewards, axis = 1)))
 
 # Plot statistics.

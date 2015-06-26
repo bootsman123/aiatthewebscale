@@ -7,7 +7,7 @@ class MultiArmedBandit(object):
     """
     Contextual multi-armed bandit.
     """
-    CONTEXTS = [7,4,4,3]
+    CONTEXTS = [7, 4, 4, 3, 12, 3]
     FILE_NAME = 'multiarmedbandit.clf'
 
     def __init__(self, settings, **kwargs):

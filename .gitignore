@@ -58,3 +58,14 @@ target/
 
 # PyCharm.
 .idea/
+
+# Models.
+*.clf
+
+# Latex
+*.aux
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc

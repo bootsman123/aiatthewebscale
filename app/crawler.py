@@ -33,8 +33,8 @@ class Crawler(object):
         :return: The behavioral response (i.e., 1 = buy, 0 = didn't buy).
         """
         params = {
-            'i': runId,
-            'runid': i,
+            'i': i,
+            'runid': runId,
             'teamid': self._settings.TEAM_ID,
             'teampw': self._settings.TEAM_PASS
         }

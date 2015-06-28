@@ -29,9 +29,13 @@
 
 \begin{frame}
 	\frametitle{Model}
-	\begin{itemize}
-		\item $r = \beta_0 + \beta_1 c_1 + \ldots + \beta_k c_k + \beta_{k+1} a_1 + \ldots + \beta {k+l} a_l + \beta_{x_1} c_1a_1 + \ldots + \beta_{x_m} c_ka_l$
-		\item For reward: use price $\times$ effect instead of effect
+	
+		\begin{align*} r = \beta_0 + \beta_{x_1} c_1 + &\ldots + \beta_{x_k} c_k + \\
+	    \beta_{y_1} a_1 + &\ldots + \beta_{y_l} a_l + \\
+	    \beta_{z_1} c_1a_1 + &\ldots + \beta_{z_m} c_ka_l 
+	    \end{align*}
+	    \begin{itemize}
+		\item Reward for update: use price $\cdot$ effect instead of effect
 	\end{itemize}
 \end{frame}
 
@@ -49,8 +53,9 @@
 \begin{frame}
 	\frametitle{Misc. Improvements}
 	\begin{itemize}
-		\item Price: in buckets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+		\item Price: Maximize polynomial: $\beta_0 + \beta_1 \cdot p + \beta_2 \cdot p^2$ %in buckets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 		\item Multivariate Gaussian speedup: use Cholesky transformation
+		\item Predict 5000 random pages to give model `warm start' before doing actual predictions.
 		\item Userid: add extra features: average price user paid previously, if user has bought anything previously
 	\end{itemize}
 \end{frame}
@@ -60,8 +65,9 @@
   \frametitle{Results}
 
   \begin{itemize}
-    \item Average reward: 
-    \item Standard deviation: 
+    \item Average reward: 20.0605
+    \item Standard deviation: 24.507
+    \item Time taken: 1:25 per runId
     \item Any questions?
   \end{itemize}
 \end{frame}

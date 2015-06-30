@@ -58,14 +58,14 @@ COLORS = ['green', 'blue', 'red', 'black', 'white']
 HEADERS = ['5', '15', '35']
 PRICES = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 PRODUCT_IDS = list(range(10, 26, 1))
-PROPOSAL = collections.OrderedDict([('adtype', AD_TYPES), ('color', COLORS), ('header', HEADERS), ('price', PRICES), ('productid', PRODUCT_IDS)])
+PROPOSAL = collections.OrderedDict([('adtype', AD_TYPES), ('color', COLORS), ('header', HEADERS), ('productid', PRODUCT_IDS)]) #('price', PRICES),
 PROPOSAL_VALUE_TO_INDEX = collections.OrderedDict([('adtype', lambda value : AD_TYPES.index(value)),
                                                    ('color', lambda value : COLORS.index(value)),
                                                    ('header', lambda value : HEADERS.index(value)),
-                                                   ('price', lambda value : np.digitize([value], PRICES)[0] - 1),
-                                                   ('productid', lambda value : PRODUCT_IDS.index(value))])
+                                                   #('price', lambda value : np.digitize([value], PRICES)[0] - 1),
+                                                   ('productid', lambda value : PRODUCT_IDS.index[value])])
 PROPOSAL_INDEX_TO_VALUE = collections.OrderedDict([('adtype', lambda index : AD_TYPES[index]),
                                                    ('color', lambda index : COLORS[index]),
                                                    ('header', lambda index : HEADERS[index]),
-                                                   ('price', lambda index : PRICES[index]),
+                                                   #('price', lambda index : PRICES[index]),
                                                    ('productid', lambda index : PRODUCT_IDS[index])])

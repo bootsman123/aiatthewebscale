@@ -19,18 +19,18 @@ logger = logging.getLogger(__name__)
 
 # Setup apps.
 crawler = Crawler(settings)
-multiarmedbandit = MultiArmedBandit(settings)
+multiarmedbandit = MultiArmedBandit(settings) # MultiArmedBandit.load('objects/mab-without-user-10075-100000.clf')
 provider = Provider(settings)
 
 # Range values.
-#runIdList = [4522, 8940] + list(range(10001, 10100, 1)) # Bas start at 10075
-#iList = list(range(1, 100001, 1))
+#runIdList = [4522, 8940]# + list(range(10001, 10100, 1)) # Bas start at 10075
+#iList = list(range(1, 2000, 1))
 
-runIdList = [4522]
-iList = list(range(1, 3000))
+runIdList = [10075] #list(range(10075, 10100 + 1, 1))
+iList = list(range(1, 100000 + 1, 1))
 
 # Statistics.
-rewards = np.zeros((len(runIdList), len(iList)))
+rewards = np.zeros((len(runIdList), len(iList))) # np.load('objects/rewards-10075-100000.npy')
 
 # Timing.
 startTime = timeit.default_timer()
@@ -38,6 +38,11 @@ startTime = timeit.default_timer()
 for runIdIdx, runId in enumerate(runIdList):
     for iIdx, i in enumerate(iList):
         logger.info('At interaction {i} for runId {runId}'.format(i = i, runId = runId))
+        if i % 10000 == 0:
+            # Save objects.
+            logger.info('Saved objects')
+            multiarmedbandit.save('objects/mab-with-user-and-polynomial-{0}-{1}.clf'.format(runId, i))
+            np.save('objects/rewards-with-user-and-polynomial-{0}-{1}'.format(runId, i), rewards)
 
         # Retrieve and update context with user information.
         context = crawler.get(runId, i)
@@ -59,12 +64,14 @@ for runIdIdx, runId in enumerate(runIdList):
         # Update statistics.
         rewards[runIdIdx, iIdx] = effect['effect']['Success'] * proposal['price']
 
-    # Save multi-armed bandit.
-    multiarmedbandit.save('mab-{0}.clf'.format(runId))
+    logger.info('Computation time for run {0}: {1}'.format(runId, time.strftime('%H:%M:%S', time.gmtime(timeit.default_timer() - startTime))))
 
 # End timing.
-elapsedTime = timeit.default_timer() - startTime
-logger.info('Total computation time: {}'.format(time.strftime('%H:%M:%S', time.gmtime(elapsedTime))))
+logger.info('Total computation time: {}'.format(time.strftime('%H:%M:%S', time.gmtime(timeit.default_timer() - startTime))))
+
+logger.info('Saved objects')
+multiarmedbandit.save('objects/mab-with-user-and-polynomial-{0}-{1}.clf'.format(runId, i))
+np.save('objects/rewards-with-user-and-polynomial-{0}-{1}'.format(runId, i), rewards)
 
 # Output statistics.
 logger.info('Total reward: {}'.format(np.sum(rewards)))

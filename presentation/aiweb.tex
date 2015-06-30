@@ -21,8 +21,8 @@
 \begin{frame}
 	\frametitle{Approach}	
 	\begin{itemize}
-		\item Epsilon-greedy
-		\item Gibbs-sampling
+		\item Epsilon-greedy - Good baseline
+		\item Gibbs-sampling - Too computationally expensive
 		\item Thompson-sampling
 	\end{itemize}
 \end{frame}
@@ -35,7 +35,8 @@
 	    \beta_{z_1} c_1a_1 + &\ldots + \beta_{z_m} c_ka_l 
 	    \end{align*}
 	    \begin{itemize}
-		\item Reward for update: use \emph{price} $\cdot$ \emph{effect} instead of \emph{effect}
+		\item  Reward for update: use \emph{price} $\cdot$ \emph{effect} instead of \emph{effect}
+		\item  Price: Maximize polynomial: $\beta_0 + \beta_1 \cdot p + \beta_2 \cdot p^2$ instead of bucketing: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 	\end{itemize}
 \end{frame}
 
@@ -60,11 +61,11 @@
 	\frametitle{Miscellaneous improvements}
 	\setbeamercovered{transparent}
 	\begin{itemize}
-		\item<1,5| alert@5> Price: Maximize polynomial: $\beta_0 + \beta_1 \cdot p + \beta_2 \cdot p^2$ instead of bucketing: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+		%\item<1,5| alert@5> 
 		%in buckets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-		\item<2,5| alert@5> Multivariate Gaussian speedup: using Cholesky transformation
-		\item<3,5| alert@5> Use 5000 random interactions to give model `warm start' before doing actual predictions
-		\item<4,5> Add features for user ID: average price user paid previously, and whether the user actually bought anything
+		\item<1,4> Multivariate Gaussian speedup: using Cholesky transformation
+		\item<2,4> Use 5000 random interactions to give model `warm start' before doing actual predictions
+		\item<3,4 | alert@4> Add features for user ID: average price user paid previously, and whether the user actually bought anything
 	\end{itemize}
 \end{frame}
 

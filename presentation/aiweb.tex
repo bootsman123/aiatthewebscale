@@ -35,36 +35,28 @@
 	    \beta_{z_1} c_1a_1 + &\ldots + \beta_{z_m} c_ka_l 
 	    \end{align*}
 	    \begin{itemize}
-		\item Reward for update: use \emph{price} $\cdot$ \emph{effect} instead of \emph{effect}
+		\item Reward for update: use price $\cdot$ effect instead of effect
 	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Visualization of policy}
+	\frametitle{Visualization}
 	\includegraphics[width=\textwidth]{test.png}
-	\begin{itemize}
-		\item Pre-defined distribution for $3$ context parameters, and $4$ arms
-	\end{itemize}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Visualization of context vs. proposal}
+	\frametitle{Visualization}
 	\includegraphics[width=\textwidth]{viewer.png}
-	\begin{itemize}
-		\item Every possible combination of proposal parameters, except \emph{price} = $1$
-	\end{itemize}
 \end{frame}
 
 
 \begin{frame}
-	\frametitle{Miscellaneous improvements}
-	\setbeamercovered{transparent}
+	\frametitle{Misc. Improvements}
 	\begin{itemize}
-		\item<1,5| alert@5> Price: Maximize polynomial: $\beta_0 + \beta_1 \cdot p + \beta_2 \cdot p^2$ instead of bucketing: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-		%in buckets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-		\item<2,5| alert@5> Multivariate Gaussian speedup: using Cholesky transformation
-		\item<3,5| alert@5> Use 5000 random interactions to give model `warm start' before doing actual predictions
-		\item<4,5> Add features for user ID: average price user paid previously, and whether the user actually bought anything
+		\item Price: Maximize polynomial: $\beta_0 + \beta_1 \cdot p + \beta_2 \cdot p^2$ %in buckets: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+		\item Multivariate Gaussian speedup: use Cholesky transformation
+		\item Predict 5000 random pages to give model `warm start' before doing actual predictions.
+		\item Userid: add extra features: average price user paid previously, if user has bought anything previously
 	\end{itemize}
 \end{frame}
 
@@ -75,7 +67,7 @@
   \begin{itemize}
     \item Average reward: 20.0605
     \item Standard deviation: 24.507
-    \item Time taken: $\sim$01:25h per run
+    \item Time taken: 1:25 per runId
     \item Any questions?
   \end{itemize}
 \end{frame}

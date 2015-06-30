@@ -11,6 +11,18 @@ import settings
 client = pymongo.MongoClient(settings.DB_HOST, settings.DB_PORT)
 database = client['aiatthewebscale']
 
+rewards = np.array([20.0605, 14.286, 21.6325, 20.835, 21.511, 22.365, 18.4635, 11.737, 17.208, 19.215, 2.6385, 9.995, 16.2645, 17.441, 14.0165, 20.319,  20.684])
+x = range(0, rewards.size, 1)
+labels = [10001] + list(range(10004, 10004 + rewards.size - 1, 1))
+
+plt.title('Mean reward per run')
+plt.plot(x, rewards, 'bo-')
+plt.xticks(x, labels)
+plt.xlabel('Run')
+plt.ylabel('Mean reward')
+plt.show()
+
+
 '''
 pipeline = [
     {
@@ -47,6 +59,7 @@ plt.plot(data)
 plt.show()
 '''
 
+'''
 # Plot all combinations of contexts and proposals to each other.
 contextNames = ['Agent', 'Language', 'Referer']
 proposalNames = ['adtype', 'color', 'header', 'productid']
@@ -124,3 +137,4 @@ for index, (contextName, proposalName) in enumerate(itertools.product(contextNam
     axes.set_yticklabels(settings.CONTEXT[contextName], minor = False)
 
 plt.show()
+'''

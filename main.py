@@ -20,17 +20,14 @@ logger = logging.getLogger(__name__)
 # Setup apps.
 crawler = Crawler(settings)
 multiarmedbandit = MultiArmedBandit(settings) # MultiArmedBandit.load('objects/mab-without-user-10075-100000.clf')
-provider = Provider(settings)
+#provider = Provider(settings)
 
 # Range values.
-#runIdList = [4522, 8940]# + list(range(10001, 10100, 1)) # Bas start at 10075
-#iList = list(range(1, 2000, 1))
-
-runIdList = [10075] #list(range(10075, 10100 + 1, 1))
-iList = list(range(1, 100000 + 1, 1))
+runIdList = list(range(10001, 10100, 1))
+iList = list(range(1, 2000, 1))
 
 # Statistics.
-rewards = np.zeros((len(runIdList), len(iList))) # np.load('objects/rewards-10075-100000.npy')
+rewards = np.zeros((len(runIdList), len(iList)))
 
 # Timing.
 startTime = timeit.default_timer()
@@ -38,16 +35,16 @@ startTime = timeit.default_timer()
 for runIdIdx, runId in enumerate(runIdList):
     for iIdx, i in enumerate(iList):
         logger.info('At interaction {i} for runId {runId}'.format(i = i, runId = runId))
-        if i % 10000 == 0:
-            # Save objects.
-            logger.info('Saved objects')
-            multiarmedbandit.save('objects/mab-with-user-and-polynomial-{0}-{1}.clf'.format(runId, i))
-            np.save('objects/rewards-with-user-and-polynomial-{0}-{1}'.format(runId, i), rewards)
+        #if i % 10000 == 0:
+        #    # Save objects.
+        #    logger.info('Saved objects')
+        #    multiarmedbandit.save('objects/mab-with-user-and-polynomial-{0}-{1}.clf'.format(runId, i))
+        #    np.save('objects/rewards-with-user-and-polynomial-{0}-{1}'.format(runId, i), rewards)
 
         # Retrieve and update context with user information.
         context = crawler.get(runId, i)
-        userContext = provider.get(context['context'])
-        context['context'].update(userContext)
+        #userContext = provider.get(context['context'])
+        #context['context'].update(userContext)
 
         # Generate a proposal.
         proposal = multiarmedbandit.propose(context['context'])
@@ -59,7 +56,7 @@ for runIdIdx, runId in enumerate(runIdList):
         multiarmedbandit.update(effect['effect'])
 
         # Update database.
-        provider.put(runId, i, context, proposal, effect)
+        #provider.put(runId, i, context, proposal, effect)
 
         # Update statistics.
         rewards[runIdIdx, iIdx] = effect['effect']['Success'] * proposal['price']
@@ -85,15 +82,3 @@ plt.suptitle('Reward of all runs for policy')
 plt.ylabel('Cumulative reward')
 plt.xlabel('Number of interactions')
 plt.show()
-
-'''
-x = np.arange(0, maxI - minI + 1, 1)
-y = np.cumsum(np.mean(rewards, axis = 0))
-error = np.std(rewards, axis = 0)
-
-plt.errorbar(x, y, yerr = error)
-plt.suptitle('Error bar of mean reward for policy')
-plt.ylabel('Cumulative reward')
-plt.xlabel('Number of interactions')
-plt.show()
-'''
